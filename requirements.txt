@@ -1,7 +1,5 @@
-apppath
+devpack
 neodroid
-warg
-draugr
 numpy
 scipy
 scikit-image
@@ -14,5 +12,4 @@ torch
 torchaudio
 tensorflow
 pycocotools
-pathlib
 albumentations
