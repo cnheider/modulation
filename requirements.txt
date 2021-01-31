@@ -1,0 +1,15 @@
+devpack
+neodroid
+numpy
+scipy
+scikit-image
+tqdm
+Pillow
+matplotlib
+pip
+h5py
+torch
+torchaudio
+tensorflow
+pycocotools
+albumentations
