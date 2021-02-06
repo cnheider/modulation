@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-__author__ = 'Christian Heider Nielsen'
-__doc__ = r'''
+__author__ = "Christian Heider Nielsen"
+__doc__ = r"""
 
            Created on 10-12-2020
-           '''
+           """
 
 from pathlib import Path
 from typing import Any
@@ -27,16 +27,16 @@ def sample_noise(
     signal_rate: int,
     *,
     resample_noise: bool = True,
-    ) -> Any:
-  noise_len = len(noise)
-  if resample_noise:
-    noise = scipy_signal.resample(
-        noise, round(noise_len * float(signal_rate) / noise_rate)
+) -> Any:
+    noise_len = len(noise)
+    if resample_noise:
+        noise = scipy_signal.resample(
+            noise, round(noise_len * float(signal_rate) / noise_rate)
         )
 
-  start_index = numpy.random.randint(0, noise_len)
-  noise = numpy.tile(noise, (signal_len // noise_len) + 2)  # at least tile once (=2)
-  return noise[start_index: signal_len + start_index]
+    start_index = numpy.random.randint(0, noise_len)
+    noise = numpy.tile(noise, (signal_len // noise_len) + 2)  # at least tile once (=2)
+    return noise[start_index : signal_len + start_index]
 
 
 def compute_additive_noise_samples(
@@ -45,39 +45,41 @@ def compute_additive_noise_samples(
     signal_file: Path,
     category,
     out_dir,
-    noise_file
-    ) -> None:
-  sr_noise, noise = wavfile.read(str(noise_file))
-  sr_signal, signal = wavfile.read(str(signal_file))
+    noise_file,
+) -> None:
+    sr_noise, noise = wavfile.read(str(noise_file))
+    sr_signal, signal = wavfile.read(str(signal_file))
 
-  max_sample = numpy.max(signal)
-  signal = signal / max_sample
+    max_sample = numpy.max(signal)
+    signal = signal / max_sample
 
-  noise_part = sample_noise(noise / numpy.max(noise),
-                            noise_rate=sr_noise,
-                            signal_len=len(signal),
-                            signal_rate=sr_signal
-                            )
+    noise_part = sample_noise(
+        noise / numpy.max(noise),
+        noise_rate=sr_noise,
+        signal_len=len(signal),
+        signal_rate=sr_signal,
+    )
 
-  noise_scaled = noise_part * (
-      root_mean_square(mask_split_speech_silence(voice_activity_mask, signal)[0]) / root_mean_square(noise_part)
-  )  # scaled by ratio of speech to noise level
+    noise_scaled = noise_part * (
+        root_mean_square(mask_split_speech_silence(voice_activity_mask, signal)[0])
+        / root_mean_square(noise_part)
+    )  # scaled by ratio of speech to noise level
 
-  for snr in (i * 5 for i in range(5)):
-    noised = signal + noise_scaled / (10 ** (snr / 20))
-    wavfile.write(
-        str(
-            ensure_existence(
-                out_dir
-                / f'{noise_file.with_suffix("").name}_SNR_{snr}dB'
-                / category
+    for snr in (i * 5 for i in range(5)):
+        noised = signal + noise_scaled / (10 ** (snr / 20))
+        wavfile.write(
+            str(
+                ensure_existence(
+                    out_dir
+                    / f'{noise_file.with_suffix("").name}_SNR_{snr}dB'
+                    / category
                 )
-            / signal_file.name
+                / signal_file.name
             ),
-        sr_signal,
-        ((noised / numpy.max(noised)) * max_sample).astype(numpy.int16),
+            sr_signal,
+            ((noised / numpy.max(noised)) * max_sample).astype(numpy.int16),
         )
 
 
-if __name__ == '__main__':
-  pass
+if __name__ == "__main__":
+    pass
