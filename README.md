@@ -1,6 +1,13 @@
-![header](.github/images/header.png)
 
-# Audition
+<!--![header](.github/images/header.png)-->
+
+<p align="center">
+  <img src=".github/images/header.png" alt='header' />
+</p>
+
+<h1 align="center">Audition</h1>
+
+<!--# Audition-->
 
 This repository will host implementation audio modality algorithms applied to the [Neodroid](https://github.com/sintefneodroid/) platform.
 
@@ -19,8 +26,8 @@ _[Neodroid](https://github.com/sintefneodroid) is developed with support from Re
 [![codecov](https://codecov.io/gh/author/repo/branch/master/graph/badge.svg)](https://codecov.io/gh/author/repo)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/author/repo/blob/master/notebooks/repo-introduction.ipynb)
 
-| [![Build Status](https://travis-ci.org/sintefneodroid/agent.svg?branch=master)](https://travis-ci.org/sintefneodroid/agent)  | [![Coverage Status](https://coveralls.io/repos/github/sintefneodroid/agent/badge.svg?branch=master)](https://coveralls.io/github/sintefneodroid/agent?branch=master)  | [![GitHub Issues](https://img.shields.io/github/issues/sintefneodroid/agent.svg?style=flat)](https://github.com/sintefneodroid/agent/issues)  |  [![GitHub Forks](https://img.shields.io/github/forks/sintefneodroid/agent.svg?style=flat)](https://github.com/sintefneodroid/agent/network) | [![GitHub Stars](https://img.shields.io/github/stars/sintefneodroid/agent.svg?style=flat)](https://github.com/sintefneodroid/agent/stargazers) |[![GitHub License](https://img.shields.io/github/license/sintefneodroid/agent.svg?style=flat)](https://github.com/sintefneodroid/agent/blob/master/LICENSE.md) |
-|---|---|---|---|---|---|
+| [![Build Status](https://travis-ci.org/sintefneodroid/agent.svg?branch=master)](https://travis-ci.org/sintefneodroid/agent)  | [![Coverage Status](https://coveralls.io/repos/github/sintefneodroid/agent/badge.svg?branch=master)](https://coveralls.io/github/sintefneodroid/agent?branch=master)  | [![GitHub Issues](https://img.shields.io/github/issues/sintefneodroid/agent.svg?style=flat)](https://github.com/sintefneodroid/agent/issues)  |  [![GitHub Forks](https://img.shields.io/github/forks/sintefneodroid/agent.svg?style=flat)](https://github.com/sintefneodroid/agent/network) | [![GitHub Stars](https://img.shields.io/github/stars/sintefneodroid/agent.svg?style=flat)](https://github.com/sintefneodroid/agent/stargazers) |[![GitHub License](https://img.shields.io/github/license/sintefneodroid/agent.svg?style=flat)](https://github.com/sintefneodroid/agent/blob/master/LICENSE.md) | [![CodeScene System Mastery](https://codescene.io/projects/12883/status-badges/system-mastery)](https://codescene.io/projects/12883) | [![CodeScene Code Health](https://codescene.io/projects/12883/status-badges/code-health)](https://codescene.io/projects/12883) |
+|---|---|---|---|---|---|---|---|
 
 <p align="center" width="100%">
   <a href="https://www.python.org/">

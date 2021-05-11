@@ -11,9 +11,12 @@ import os
 
 import numpy
 import soundfile
+from typing import Any, Sequence, Tuple
 
 
-def audio_read(path, norm=True, start=0, stop=None):
+def audio_read(
+    path: str, norm: bool = True, start: int = 0, stop: int = None
+) -> Tuple[numpy.ndarray, int]:
     path = os.path.abspath(path)
     if not os.path.exists(path):
         raise ValueError(f"[{path}] does not exist!")
@@ -37,7 +40,9 @@ def audio_read(path, norm=True, start=0, stop=None):
         print("WARNING: Audio type not supported")
 
 
-def audio_write(data, fs, destpath, norm=False):
+def audio_write(
+    data: numpy.ndarray, fs: int, dest_path: str, norm: bool = False
+) -> None:
     if norm:
         rms = (data ** 2).mean() ** 0.5
         scalar = 10 ** (-25 / 10) / (rms + numpy.eps)
@@ -45,11 +50,10 @@ def audio_write(data, fs, destpath, norm=False):
         if max(abs(data)) >= 1:
             data = data / max(abs(data), numpy.eps)
 
-    destpath = os.path.abspath(destpath)
-    destdir = os.path.dirname(destpath)
+    dest_path = os.path.abspath(dest_path)
+    destdir = os.path.dirname(dest_path)
 
     if not os.path.exists(destdir):
         os.makedirs(destdir)
 
-    soundfile.write(destpath, data, fs)
-    return
+    soundfile.write(dest_path, data, fs)

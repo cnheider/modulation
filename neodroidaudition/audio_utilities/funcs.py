@@ -9,13 +9,13 @@ __doc__ = r"""
 
 import numpy
 import torch
-from draugr import next_pow_2, identity
+from draugr import next_pow_2
 from scipy.signal import lfilter, hilbert
 
-from typing import Sequence, Iterable, Callable
+from typing import Sequence, Iterable, Callable, Union
 from functools import reduce
 
-from warg import Number
+from warg import Number, identity
 
 
 def mel_scale(x):
@@ -71,7 +71,7 @@ def hilbert_envelope(signal: numpy.ndarray, *, n_fft: int = None) -> numpy.ndarr
 
 
 class SignalGenerator:
-    def __init__(self, *funcs: Iterable[Callable], delta_time: float = 1.0):
+    def __init__(self, *funcs: Union[Callable, Number], delta_time: float = 1.0):
         self.reset_internal_time()
         self.delta_time = delta_time
         self.funcs = (0, *funcs)
@@ -97,7 +97,7 @@ class SignalGenerator:
         self.t = t
 
     def __enter__(self):
-        reset_internal_time()
+        self.reset_internal_time()
         return True
 
 

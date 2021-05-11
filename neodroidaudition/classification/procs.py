@@ -8,7 +8,8 @@ __doc__ = r"""
            """
 
 import torch
-from draugr import Split
+from draugr.numpy_utilities import Split
+
 from torch.nn import Module
 from torch.nn.functional import nll_loss
 from torch.utils.data import DataLoader

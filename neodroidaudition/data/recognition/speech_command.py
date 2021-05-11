@@ -46,8 +46,8 @@ class SpeechCommands(SPEECHCOMMANDS):
 
     def __init__(
         self,
-        *,
         path: Path = Path.home() / "Data" / "Audio" / "Speech" / "SpeechCommands",
+        *,
         split: Split = None,
         version: str = "speech_commands_v0.02"
     ):
