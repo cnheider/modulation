@@ -65,7 +65,11 @@ class MelSpectrogram(nn.Module):
         self.clip_min_value = clip_min_value
 
         mel_basis = librosa.filters.mel(
-            sr=sample_rate, n_fft=n_fft, n_mels=n_mels, fmin=f_min, fmax=f_max,
+            sr=sample_rate,
+            n_fft=n_fft,
+            n_mels=n_mels,
+            fmin=f_min,
+            fmax=f_max,
         ).T
         self.transform.mel_scale.fb.copy_(torch.tensor(mel_basis))
 

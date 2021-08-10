@@ -203,7 +203,10 @@ class UNet(
         )
 
     def training_step(self, batch, batch_idx):
-        (loss, *_,) = self.step(batch, batch_idx, inference=False)
+        (
+            loss,
+            *_,
+        ) = self.step(batch, batch_idx, inference=False)
 
         self.log("train_loss", loss)
         return loss

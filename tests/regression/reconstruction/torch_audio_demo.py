@@ -825,7 +825,10 @@ def test_mask_along_axis(specgram, mask_param, mask_value, axis):
 
 
 @pytest.mark.parametrize(
-    "specgrams", [torch.randn(4, 2, 1025, 400),],
+    "specgrams",
+    [
+        torch.randn(4, 2, 1025, 400),
+    ],
 )
 @pytest.mark.parametrize("mask_param", [100])
 @pytest.mark.parametrize("mask_value", [0.0, 30.0])

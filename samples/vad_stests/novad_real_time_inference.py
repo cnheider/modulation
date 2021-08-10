@@ -62,10 +62,10 @@ def callback(in_data, frame_count, time_info, status):
         sock.connect((args.host_ip, args.host_port))
         sent = "".join(data_list)
         sock.sendall(struct.pack(">i", len(sent)) + sent)
-        print("Speech[length=%d] Sent." % len(sent))
+        print(f"Speech[length={len(sent):d}] Sent.")
         # Receive data from the server and shut down
         received = sock.recv(1024)
-        print("Recognition Results: {}".format(received))
+        print(f"Recognition Results: {received}")
         sock.close()
         data_list = []
     enable_trigger_record = True

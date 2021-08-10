@@ -44,8 +44,8 @@ if __name__ == "__main__":
 
         def sine_wave(hz, peak, n_samples=sample_rate):
             """Compute N samples of a sine wave with given frequency and peak amplitude.
-      Defaults to one second.
-      """
+            Defaults to one second.
+            """
             length = sample_rate / float(hz)
             omega = numpy.pi * 2 / length
             xvalues = numpy.arange(int(length)) * omega
@@ -65,7 +65,8 @@ sweep_poly(t, poly[, phi]) 	#Frequency-swept cosine generator, with a time-depen
 """
         t = numpy.arange(100) / 1000
         a = SignalGenerator(
-            lambda x: sin(2 * numpy.pi * 50 * x), lambda x: cos(2 * numpy.pi * 20 * x),
+            lambda x: sin(2 * numpy.pi * 50 * x),
+            lambda x: cos(2 * numpy.pi * 20 * x),
         )
         from matplotlib import pyplot
 

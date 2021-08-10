@@ -11,7 +11,7 @@ from apppath import AppPath
 
 __project__ = "NeodroidAudition"
 __author__ = "Christian Heider Nielsen"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __doc__ = r"""
 .. module:: neodroidaudition
    :platform: Unix, Windows
