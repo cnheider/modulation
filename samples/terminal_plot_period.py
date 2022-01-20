@@ -9,7 +9,7 @@ __doc__ = r"""
 
 
 import pyaudio
-import numpy as np
+import numpy
 import pylab
 import time
 
@@ -19,7 +19,7 @@ CHUNK = int(RATE / 20)  # RATE / number of updates per second
 
 def soundplot(stream):
     t1 = time.time()
-    data = np.fromstring(stream.read(CHUNK), dtype=np.int16)
+    data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
     pylab.plot(data)
     pylab.title(i)
     pylab.grid()

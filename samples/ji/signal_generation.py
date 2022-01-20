@@ -10,7 +10,7 @@ __doc__ = r"""
 from typing import Sequence, Iterable, Callable
 from functools import reduce, partial
 
-from neodroidaudition.audio_utilities.funcs import SignalGenerator
+from modulation.audio_utilities.funcs import SignalGenerator
 from scipy.signal import sweep_poly
 
 if __name__ == "__main__":
@@ -115,11 +115,11 @@ sweep_poly(t, poly[, phi]) 	#Frequency-swept cosine generator, with a time-depen
         sound.stop()
 
     def asijasd():
-        t = np.linspace(0, 10, 5001)
+        t = numpy.linspace(0, 10, 5001)
         w = chirp(t, f0=12.5, f1=2.5, t1=10, method="linear")
 
-        p = np.poly1d([0.05, -0.75, 2.5, 5.0])
-        t = np.linspace(0, 10, 5001)
+        p = numpy.poly1d([0.05, -0.75, 2.5, 5.0])
+        t = numpy.linspace(0, 10, 5001)
         w = sweep_poly(t, p)
 
     def pygame_ex1():

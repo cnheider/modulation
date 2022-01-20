@@ -11,6 +11,6 @@ __all__ = []
 
 
 def test_import():
-    import neodroidaudition
+    import modulation
 
-    print(neodroidaudition.__version__)
+    print(modulation.__version__)

@@ -7,8 +7,8 @@ __doc__ = r"""
            Created on 18-11-2020
            """
 
-from draugr.torch_utilities import Split
-from neodroidaudition.data.recognition.speech_command import SpeechCommands
+from draugr.numpy_utilities import SplitEnum
+from modulation.data.audio.speech.recognition.speech_command import SpeechCommands
 
 
 def labels_index_test():
@@ -23,8 +23,8 @@ def labels_index_test():
 
 def labels_index_same_test():
     train_set = SpeechCommands()
-    valid_set = SpeechCommands(split=Split.Validation)
-    test_set = SpeechCommands(split=Split.Testing)
+    valid_set = SpeechCommands(split=SplitEnum.validation)
+    test_set = SpeechCommands(split=SplitEnum.testing)
 
     word_start = "yes"
     index_train = train_set.label_to_index(word_start)

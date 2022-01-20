@@ -7,7 +7,7 @@ from pathlib import Path
 
 import torch
 import torchaudio
-from draugr.numpy_utilities import Split
+from draugr.numpy_utilities import SplitEnum
 
 from draugr.torch_utilities.evaluation.classification import find_n_misclassified
 from draugr.torch_utilities.optimisation.parameters.trainable import (
@@ -15,7 +15,7 @@ from draugr.torch_utilities.optimisation.parameters.trainable import (
 )
 from draugr.tqdm_utilities import progress_bar
 
-from neodroidaudition.classification.procs import (
+from modulation.classification.procs import (
     single_epoch_evaluation,
     single_epoch_fitting,
 )
@@ -35,10 +35,10 @@ from draugr.torch_utilities import (
     save_model,
 )
 from draugr.random_utilities import seed_stack
-from neodroidaudition import PROJECT_APP_PATH
-from neodroidaudition.classification import M5
-from neodroidaudition.data import SpeechCommands
-from neodroidaudition.torch_utilities.collation import collate_transform_wrapped
+from modulation import PROJECT_APP_PATH
+from modulation.classification import M5
+from modulation.data import SpeechCommands
+from modulation.torch_utilities.collation import collate_transform_wrapped
 
 
 def main(
@@ -64,7 +64,7 @@ def main(
     print(f"using {device}")
     seed_stack(0)
 
-    train_set = SpeechCommands(data_path, split=Split.Training)
+    train_set = SpeechCommands(data_path, split=SplitEnum.training)
 
     waveform, sample_rate, category, speaker_id, utterance_number = train_set[0]
     transform = torch.nn.Sequential(
@@ -150,7 +150,7 @@ def train_proc(
         pin_memory=pin_memory,
     )
     valid_loader = DataLoader(
-        SpeechCommands(data_path, split=Split.Validation),
+        SpeechCommands(data_path, split=SplitEnum.validation),
         batch_size=batch_size,
         shuffle=False,
         drop_last=False,
@@ -183,7 +183,7 @@ def train_proc(
             accuracy = single_epoch_evaluation(
                 model,
                 valid_loader,
-                subset=Split.Validation,
+                subset=SplitEnum.validation,
                 epoch=ith_epoch,
                 writer=writer,
                 device=device,
@@ -206,7 +206,7 @@ def stest_proc(
         PROJECT_APP_PATH.user_log / model_name / str(time.time())
     ) as writer:
         test_loader = DataLoader(
-            SpeechCommands(data_path, split=Split.Testing),
+            SpeechCommands(data_path, split=SplitEnum.testing),
             batch_size=1,
             shuffle=True,
             drop_last=False,
@@ -217,7 +217,7 @@ def stest_proc(
         acc = single_epoch_evaluation(
             model,
             test_loader,
-            subset=Split.Testing,
+            subset=SplitEnum.testing,
             epoch=0,
             writer=writer,
             device=device,

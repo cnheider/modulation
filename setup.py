@@ -67,7 +67,7 @@ import re
 from setuptools import find_packages, setup
 
 with open(
-    Path(__file__).parent / "neodroidaudition" / "__init__.py", "r"
+    Path(__file__).parent / "modulation" / "__init__.py", "r"
 ) as project_init_file:
     str_reg_exp = "['\"]([^'\"]*)['\"]"
     content = project_init_file.read()  # get strings from module
@@ -77,7 +77,7 @@ with open(
 __author__ = author
 
 
-class NeodroidVisionPackage:
+class ModulationPackage:
     @property
     def test_dependencies(self) -> list:
         return read_reqs(
@@ -92,15 +92,15 @@ class NeodroidVisionPackage:
 
     @property
     def package_name(self) -> str:
-        return "NeodroidAudition"
+        return "Modulation"
 
     @property
     def url(self) -> str:
-        return "https://github.com/sintefneodroid/Audition"
+        return "https://github.com/aivclab/modulation"
 
     @property
     def download_url(self):
-        return self.url + "/releases"
+        return f"{self.url}/releases"
 
     @property
     def readme_type(self):
@@ -110,7 +110,7 @@ class NeodroidVisionPackage:
     def packages(self) -> List[Union[bytes, str]]:
         return find_packages(
             exclude=[
-                # 'neodroid/environment_utilities'
+                # 'modulation/environment_utilities'
             ]
         )
 
@@ -144,7 +144,7 @@ class NeodroidVisionPackage:
         return {
             "console_scripts": [
                 # "name_of_executable = module.with:function_to_execute"
-                "neodroid-audition = neodroidaudition.entry_points.cli:main",
+                "modulation = modulation.entry_points.cli:main",
             ]
         }
 
@@ -175,7 +175,7 @@ class NeodroidVisionPackage:
 
     @property
     def description(self) -> str:
-        return "Computer Vision algorithm implementations, intended for use with the Neodroid platform"
+        return "time series signal analysis"
 
     @property
     def readme(self) -> str:
@@ -216,7 +216,7 @@ class NeodroidVisionPackage:
 
 if __name__ == "__main__":
 
-    pkg = NeodroidVisionPackage()
+    pkg = ModulationPackage()
 
     setup(
         name=pkg.package_name,

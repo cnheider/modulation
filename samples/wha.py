@@ -11,7 +11,7 @@ __doc__ = r"""
 import pyaudio
 import time
 import pylab
-import numpy as np
+import numpy
 
 
 class SWHear(object):
@@ -29,7 +29,7 @@ class SWHear(object):
 
         # for tape recording (continuous "tape" of recent audio)
         self.tapeLength = 2  # seconds
-        self.tape = np.empty(self.rate * self.tapeLength) * np.nan
+        self.tape = numpy.empty(self.rate * self.tapeLength) * numpy.nan
 
         self.p = pyaudio.PyAudio()  # start the PyAudio class
         if startStreaming:
@@ -41,7 +41,7 @@ class SWHear(object):
 
     def stream_read(self):
         """return values for a single chunk"""
-        data = np.fromstring(self.stream.read(self.chunk), dtype=np.int16)
+        data = numpy.fromstring(self.stream.read(self.chunk), dtype=numpy.int16)
         # print(data)
         return data
 
@@ -103,7 +103,7 @@ class SWHear(object):
 
     def tape_plot(self, saveAs="03.png"):
         """plot what's in the tape."""
-        pylab.plot(np.arange(len(self.tape)) / self.rate, self.tape)
+        pylab.plot(numpy.arange(len(self.tape)) / self.rate, self.tape)
         pylab.axis([0, self.tapeLength, -(2 ** 16) / 2, 2 ** 16 / 2])
         if saveAs:
             t1 = time.time()
