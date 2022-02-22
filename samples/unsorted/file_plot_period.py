@@ -13,20 +13,25 @@ import numpy
 import pylab
 import time
 
+from modulation import PROJECT_APP_PATH
+
 RATE = 44100
 CHUNK = int(RATE / 20)  # RATE / number of updates per second
+
+res_folder = PROJECT_APP_PATH.user_log
 
 
 def soundplot(stream):
     t1 = time.time()
-    data = numpy.fromstring(stream.read(CHUNK), dtype=numpy.int16)
+    data = numpy.frombuffer(stream.read(CHUNK), dtype=numpy.int16)
     pylab.plot(data)
     pylab.title(i)
     pylab.grid()
     pylab.axis([0, len(data), -(2 ** 16) / 2, 2 ** 16 / 2])
-    pylab.savefig("03.png", dpi=50)
+    pylab.show()
+    pylab.savefig(str(res_folder / "03.png"), dpi=50)
     pylab.close("all")
-    print("took %.02f ms" % ((time.time() - t1) * 1000))
+    print(f"took {(time.time() - t1) * 1000:.02f} ms")
 
 
 if __name__ == "__main__":

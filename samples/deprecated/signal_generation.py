@@ -7,10 +7,7 @@ __doc__ = r"""
            Created on 15-01-2021
            """
 
-from typing import Sequence, Iterable, Callable
-from functools import reduce, partial
-
-from modulation.audio_utilities.funcs import SignalGenerator
+from modulation.data.signal_generator import SignalGenerator
 from scipy.signal import sweep_poly
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ from modulation.classification.procs import (
     single_epoch_evaluation,
     single_epoch_fitting,
 )
+from modulation.data.audio.speech.recognition import SpeechCommands
 
 torchaudio.USE_SOUNDFILE_LEGACY_INTERFACE = False
 
@@ -37,7 +38,6 @@ from draugr.torch_utilities import (
 from draugr.random_utilities import seed_stack
 from modulation import PROJECT_APP_PATH
 from modulation.classification import M5
-from modulation.data import SpeechCommands
 from modulation.torch_utilities.collation import collate_transform_wrapped
 
 
