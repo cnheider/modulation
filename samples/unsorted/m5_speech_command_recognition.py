@@ -25,7 +25,6 @@ torchaudio.USE_SOUNDFILE_LEGACY_INTERFACE = False
 
 from torch import optim
 from torch.utils.data import DataLoader
-from tqdm import tqdm
 
 from draugr.torch_utilities import (
     TensorBoardPytorchWriter,

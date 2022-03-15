@@ -141,3 +141,5 @@ logs/*.csv
 /captures
 .externalNativeBuild
 .ipynb_checkpoints/
+
+.dccache

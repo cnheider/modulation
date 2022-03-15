@@ -59,6 +59,9 @@ class SpeechCommands(SPEECHCOMMANDS):
             with open(filepath) as f:
                 return [str(data_path / line.strip()) for line in f]
 
+        if split:
+            split = SplitEnum(split)
+
         if split == SplitEnum.validation:
             self._walker = load_list("validation_list.txt")
         elif split == SplitEnum.testing:
