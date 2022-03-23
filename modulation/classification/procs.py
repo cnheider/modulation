@@ -9,18 +9,16 @@ __doc__ = r"""
 
 import torch
 from draugr.numpy_utilities import SplitEnum
-
-from torch.nn import Module
-from torch.nn.functional import nll_loss
-from torch.utils.data import DataLoader
-from tqdm import tqdm
-
 from draugr.torch_utilities import (
     TorchEvalSession,
     TorchTrainSession,
     global_torch_device,
 )
 from draugr.writers import Writer
+from torch.nn import Module
+from torch.nn.functional import nll_loss
+from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 
 def single_epoch_fitting(

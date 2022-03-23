@@ -11,12 +11,11 @@ from pathlib import Path
 from typing import Iterable
 
 import numpy
-
 import torchaudio
-from draugr.random_utilities.seeding import numpy_seed
-from draugr.numpy_utilities import zero_pad_to_power_2
-from draugr.torch_utilities import to_tensor
 from draugr import next_pow_2
+from draugr.numpy_utilities import zero_pad_to_power_2
+from draugr.random_utilities.seeding import numpy_seed
+from draugr.torch_utilities import to_tensor
 from matplotlib import pyplot
 from numpy import fft
 from scipy.signal import butter, filtfilt, welch
@@ -76,7 +75,7 @@ def spectrum_like_noise(
     if not long_term_avg:
         n_fft = next_pow_2(signal_length)
         spec = numpy.abs(fft.rfft(signal, n_fft))
-        psd = (spec ** 2) * sc
+        psd = (spec**2) * sc
     else:
         n_per_seg = next_pow_2(
             int(sampling_rate * window_length_sec)

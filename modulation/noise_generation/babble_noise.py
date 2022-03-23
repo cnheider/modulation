@@ -12,10 +12,8 @@ from typing import Iterable, Sequence
 
 import numpy
 import torchaudio
-
-from draugr.torch_utilities import to_tensor
-
 from draugr.numpy_utilities.signal_utilities.truncation import min_length_truncate_batch
+from draugr.torch_utilities import to_tensor
 
 __all__ = ["generate_babble_noise"]
 

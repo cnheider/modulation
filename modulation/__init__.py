@@ -6,7 +6,6 @@ import os
 from warnings import warn
 
 import pkg_resources
-
 from apppath import AppPath
 
 __project__ = "Modulation"

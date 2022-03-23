@@ -7,8 +7,8 @@ __doc__ = r"""
            Created on 03-12-2020
            """
 
-from .speech_command import *
-from .yes_no import *
-from .vctk import *
-from .speech_command import *
 from .libri_speech import *
+from .speech_command import *
+from .speech_command import *
+from .vctk import *
+from .yes_no import *

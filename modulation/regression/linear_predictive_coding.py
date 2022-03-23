@@ -32,7 +32,7 @@ def lpc_simple(y, m):
             alpha = -a[: k + 1].dot(r[k + 1 : 0 : -1]) / e
             a = numpy.hstack([a, 0])
             a = a + alpha * a[::-1]
-            e *= 1 - alpha ** 2
+            e *= 1 - alpha**2
 
         return a
 

@@ -3,7 +3,6 @@ from typing import Union, Callable, Iterable, Sequence
 
 from warg import Number, identity
 
-
 __all__ = ["SignalGenerator"]
 
 

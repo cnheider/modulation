@@ -9,11 +9,12 @@ __doc__ = r"""
 
 __all__ = []
 
-import keyboard
-import struct
-import socket
-import sys
 import argparse
+import socket
+import struct
+import sys
+
+import keyboard
 import pyaudio
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -73,7 +74,6 @@ def callback(in_data, frame_count, time_info, status):
 
 
 def main():
-
     p = pyaudio.PyAudio()
     stream = p.open(
         format=pyaudio.paInt32,

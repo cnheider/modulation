@@ -8,9 +8,6 @@ __doc__ = r"""
            """
 
 import numpy
-import numpy
-import torch
-from matplotlib import pyplot
 
 
 def one_sample_positive_class_precisions(
@@ -57,11 +54,10 @@ def one_sample_positive_class_precisions(
     retrieved_cumulative_hits = numpy.cumsum(
         retrieved_class_true
     )  # Num hits for every truncated retrieval list.
-    precision_at_hits = retrieved_cumulative_hits[  # Precision of retrieval list truncated at each hit, in order of pos_labels.
+    precision_at_hits = retrieved_cumulative_hits[
+        # Precision of retrieval list truncated at each hit, in order of pos_labels.
         class_rankings[pos_class_indices]
-    ] / (
-        1 + class_rankings[pos_class_indices].astype(numpy.float)
-    )
+    ] / (1 + class_rankings[pos_class_indices].astype(numpy.float))
 
     return pos_class_indices, precision_at_hits
 

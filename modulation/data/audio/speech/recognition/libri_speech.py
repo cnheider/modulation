@@ -7,14 +7,13 @@ __doc__ = r"""
            Created on 10-12-2020
            """
 
+import csv
+from enum import Enum
 from pathlib import Path
 
-from torchaudio.datasets import LIBRISPEECH
-
-from draugr.numpy_utilities import SplitIndexer, SplitEnum
 from draugr import symbol_filter, FilterModeEnum
-from enum import Enum
-import csv
+from draugr.numpy_utilities import SplitIndexer, SplitEnum
+from torchaudio.datasets import LIBRISPEECH
 
 
 class LibriSpeech(LIBRISPEECH):

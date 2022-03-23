@@ -7,8 +7,9 @@ __doc__ = r"""
            Created on 15-01-2021
            """
 
-from modulation.data.signal_generator import SignalGenerator
 from scipy.signal import sweep_poly
+
+from modulation.data.signal_generator import SignalGenerator
 
 if __name__ == "__main__":
 
@@ -120,7 +121,6 @@ sweep_poly(t, poly[, phi]) 	#Frequency-swept cosine generator, with a time-depen
         w = sweep_poly(t, p)
 
     def pygame_ex1():
-
         import pygame, pygame.sndarray
         import numpy
         import scipy.signal

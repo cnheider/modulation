@@ -13,8 +13,8 @@ from pathlib import Path
 
 import numpy
 import torchaudio
-from draugr.torch_utilities import to_tensor
 from draugr.numpy_utilities import get_sampler, normalise_signal
+from draugr.torch_utilities import to_tensor
 from matplotlib import pyplot
 from numpy.fft import irfft, rfft
 

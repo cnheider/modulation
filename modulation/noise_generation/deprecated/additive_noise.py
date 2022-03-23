@@ -13,7 +13,6 @@ from typing import Iterable
 import numpy
 import torchaudio
 from draugr.torch_utilities import to_tensor
-
 from modulation.audio_utilities.signal_statistics import root_mean_square
 
 

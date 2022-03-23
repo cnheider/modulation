@@ -8,6 +8,7 @@ __doc__ = r"""
            """
 
 from draugr.numpy_utilities import SplitEnum
+
 from modulation.data.audio.speech.recognition.speech_command import SpeechCommands
 
 

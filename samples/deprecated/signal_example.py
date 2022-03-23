@@ -7,14 +7,12 @@ __doc__ = r"""
            Created on 18-12-2020
            """
 
-from functools import reduce
-
 import numpy
 from matplotlib import pyplot
 
 t = numpy.linspace(1, 100, 1000)
 x_volts = 10 * numpy.sin(t / (2 * numpy.pi))
-x_watts = x_volts ** 2
+x_watts = x_volts**2
 x_db = 10 * numpy.log10(x_watts)
 
 
@@ -72,10 +70,10 @@ def noise():
     pyplot.xlabel("Time (s)")
     pyplot.show()
     # Plot in dB
-    y_watts = y_volts ** 2
+    y_watts = y_volts**2
     y_db = 10 * numpy.log10(y_watts)
     pyplot.subplot(2, 1, 2)
-    pyplot.plot(t, 10 * numpy.log10(y_volts ** 2))
+    pyplot.plot(t, 10 * numpy.log10(y_volts**2))
     pyplot.title("Signal with noise (dB)")
     pyplot.ylabel("Power (dB)")
     pyplot.xlabel("Time (s)")
@@ -144,10 +142,10 @@ def known_noise():
     pyplot.xlabel("Time (s)")
     pyplot.show()
     # Plot in dB
-    y_watts = y_volts ** 2
+    y_watts = y_volts**2
     y_db = 10 * numpy.log10(y_watts)
     pyplot.subplot(2, 1, 2)
-    pyplot.plot(t, 10 * numpy.log10(y_volts ** 2))
+    pyplot.plot(t, 10 * numpy.log10(y_volts**2))
     pyplot.title("Signal with noise")
     pyplot.ylabel("Power (dB)")
     pyplot.xlabel("Time (s)")

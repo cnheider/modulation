@@ -7,11 +7,11 @@ __doc__ = r"""
            Created on 09-07-2021
            """
 
-
-import pyaudio
-import numpy
-import pylab
 import time
+
+import numpy
+import pyaudio
+import pylab
 
 from modulation import PROJECT_APP_PATH
 
@@ -27,7 +27,7 @@ def soundplot(stream):
     pylab.plot(data)
     pylab.title(i)
     pylab.grid()
-    pylab.axis([0, len(data), -(2 ** 16) / 2, 2 ** 16 / 2])
+    pylab.axis([0, len(data), -(2**16) / 2, 2**16 / 2])
     pylab.show()
     pylab.savefig(str(res_folder / "03.png"), dpi=50)
     pylab.close("all")

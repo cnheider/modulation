@@ -10,16 +10,16 @@ __doc__ = r"""
 from typing import Iterable, Tuple
 
 import torch
+from draugr.torch_utilities import global_torch_device
 from torch.types import Device
 
-from draugr.torch_utilities import global_torch_device
 from modulation.torch_utilities.padding import min_length_pad, pad_sequence
 
 __all__ = ["collate_pad_wrapped", "collate_transform_wrapped"]
 
 from matplotlib import pyplot
 import numpy
-import wave, sys
+import wave
 
 
 # shows the sound waves

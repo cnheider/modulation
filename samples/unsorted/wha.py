@@ -7,11 +7,11 @@ __doc__ = r"""
            Created on 09-07-2021
            """
 
-
-import pyaudio
 import time
-import pylab
+
 import numpy
+import pyaudio
+import pylab
 
 
 class SWHear(object):
@@ -104,7 +104,7 @@ class SWHear(object):
     def tape_plot(self, saveAs="03.png"):
         """plot what's in the tape."""
         pylab.plot(numpy.arange(len(self.tape)) / self.rate, self.tape)
-        pylab.axis([0, self.tapeLength, -(2 ** 16) / 2, 2 ** 16 / 2])
+        pylab.axis([0, self.tapeLength, -(2**16) / 2, 2**16 / 2])
         if saveAs:
             t1 = time.time()
             pylab.savefig(saveAs, dpi=50)

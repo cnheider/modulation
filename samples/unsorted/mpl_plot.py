@@ -7,16 +7,13 @@ __doc__ = r"""
            Created on 24/01/2022
            """
 
-
-import pyaudio
 import numpy
-import pylab
+import pyaudio
 from draugr.drawers import discrete_scroll_plot
 from matplotlib import pyplot
 
 RATE = 44100
 CHUNK = int(RATE / 20)  # RATE / number of updates per second
-
 
 if __name__ == "__main__":
     p = pyaudio.PyAudio()

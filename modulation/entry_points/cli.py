@@ -7,10 +7,10 @@ __doc__ = r"""
            Created on 09/02/2020
            """
 
+import draugr
 import fire
 from pyfiglet import Figlet
 
-import draugr
 from modulation import __project__, get_version
 
 sponsors = "Alexandra Institute"

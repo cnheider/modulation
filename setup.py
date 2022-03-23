@@ -215,7 +215,6 @@ class ModulationPackage:
 
 
 if __name__ == "__main__":
-
     pkg = ModulationPackage()
 
     setup(

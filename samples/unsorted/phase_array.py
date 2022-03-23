@@ -99,7 +99,6 @@ class EmitterArray:
 
 
 def asd():
-
     FPS = 30
     X, Y = 100, 100
     c, f = 3, 0.2
@@ -223,5 +222,4 @@ def asd():
 
 
 if __name__ == "__main__":
-
     asd()

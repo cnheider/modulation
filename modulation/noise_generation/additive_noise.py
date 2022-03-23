@@ -11,11 +11,11 @@ from pathlib import Path
 from typing import Any
 
 import numpy
-from scipy import signal
-from draugr.numpy_utilities import root_mean_square
-from scipy.io import wavfile
-from draugr.tqdm_utilities import progress_bar
 from apppath import ensure_existence
+from draugr.numpy_utilities import root_mean_square
+from draugr.tqdm_utilities import progress_bar
+from scipy import signal
+from scipy.io import wavfile
 
 from modulation.audio_utilities.splitting import mask_split_speech_silence
 

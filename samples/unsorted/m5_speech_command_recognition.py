@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import math
 import time
 from pathlib import Path
 
 import torch
 import torchaudio
 from draugr.numpy_utilities import SplitEnum
-
 from draugr.torch_utilities.evaluation.classification import find_n_misclassified
 from draugr.torch_utilities.optimisation.parameters.trainable import (
     trainable_parameters,

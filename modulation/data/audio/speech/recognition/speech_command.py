@@ -11,9 +11,8 @@ from pathlib import Path
 from typing import List
 
 import torch
-from torchaudio.datasets import SPEECHCOMMANDS
-
 from draugr.numpy_utilities import SplitEnum
+from torchaudio.datasets import SPEECHCOMMANDS
 
 __all__ = ["SpeechCommands"]
 

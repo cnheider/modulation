@@ -8,10 +8,10 @@ __doc__ = r"""
            """
 
 import os
+from typing import Tuple
 
 import numpy
 import soundfile
-from typing import Any, Sequence, Tuple
 
 
 def audio_read(
@@ -24,7 +24,7 @@ def audio_read(
         x, sr = soundfile.read(path, start=start, stop=stop)
         if len(x.shape) == 1:  # mono
             if norm:
-                rms = (x ** 2).mean() ** 0.5
+                rms = (x**2).mean() ** 0.5
                 scalar = 10 ** (-25 / 20) / rms
                 x = x * scalar
             return x, sr
@@ -32,7 +32,7 @@ def audio_read(
             x = x.T
             x = x.sum(axis=0) / x.shape[0]
             if norm:
-                rms = (x ** 2).mean() ** 0.5
+                rms = (x**2).mean() ** 0.5
                 scalar = 10 ** (-25 / 20) / rms
                 x = x * scalar
             return x, sr
@@ -44,7 +44,7 @@ def audio_write(
     data: numpy.ndarray, fs: int, dest_path: str, norm: bool = False
 ) -> None:
     if norm:
-        rms = (data ** 2).mean() ** 0.5
+        rms = (data**2).mean() ** 0.5
         scalar = 10 ** (-25 / 10) / (rms + numpy.eps)
         data = data * scalar
         if max(abs(data)) >= 1:

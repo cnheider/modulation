@@ -10,9 +10,8 @@ __doc__ = r"""
 from typing import Iterable, Sequence, Tuple
 
 import torch
-from torch.nn import functional
-
 from draugr.torch_utilities import to_tensor
+from torch.nn import functional
 from warg import Number
 
 __all__ = ["batch_pad", "pad_sequence", "min_length_pad"]
