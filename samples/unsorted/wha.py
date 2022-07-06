@@ -90,6 +90,13 @@ class SWHear(object):
             self.tape_add()
 
     def tape_forever(self, plotSec=0.25):
+        """
+
+        :param plotSec:
+        :type plotSec:
+        :return:
+        :rtype:
+        """
         t1 = 0
         try:
             while True:

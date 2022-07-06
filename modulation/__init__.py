@@ -30,7 +30,7 @@ from pathlib import Path
 
 def dist_is_editable(dist: Any) -> bool:
     """
-    Return True if given Distribution is an editable install."""
+    Return True if given Distribution is an editable installation."""
     import sys
 
     for path_item in sys.path:
@@ -44,6 +44,7 @@ PROJECT_NAME = __project__.lower().strip().replace(" ", "_")
 PROJECT_VERSION = __version__
 PROJECT_YEAR = 2018
 PROJECT_AUTHOR = __author__.lower().strip().replace(" ", "_")
+PROJECT_ORGANISATION = "Aivclab"
 PROJECT_APP_PATH = AppPath(app_name=PROJECT_NAME, app_author=PROJECT_AUTHOR)
 PACKAGE_DATA_PATH = Path(pkg_resources.resource_filename(PROJECT_NAME, "data"))
 INCLUDE_PROJECT_READMES = False
@@ -57,6 +58,13 @@ else:
 
 
 def get_version(append_time: Any = DEVELOP) -> str:
+    """
+
+    :param append_time:
+    :type append_time:
+    :return:
+    :rtype:
+    """
     version = __version__
     if not version:
         version = os.getenv("VERSION", "0.0.0")

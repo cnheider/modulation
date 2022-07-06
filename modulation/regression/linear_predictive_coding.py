@@ -40,6 +40,7 @@ def lpc_simple(y, m):
 if __name__ == "__main__":
 
     def asidj():
+        """ """
         import librosa
         from matplotlib import pyplot
 

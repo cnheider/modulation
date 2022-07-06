@@ -8,6 +8,7 @@ __doc__ = r"""
            """
 
 import numpy
+import sklearn
 
 
 def one_sample_positive_class_precisions(

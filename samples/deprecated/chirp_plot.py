@@ -22,6 +22,19 @@ FIG_SIZE = (7.5, 3.75)
 
 
 def make_linear(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
+    """
+
+    :param f0:
+    :type f0:
+    :param t1:
+    :type t1:
+    :param f1:
+    :type f1:
+    :param filename:
+    :type filename:
+    :param fig_size:
+    :type fig_size:
+    """
     t = numpy.linspace(0, t1, 5001)
     w = chirp(t, f0=f0, f1=f1, t1=t1, method="linear")
 
@@ -44,6 +57,19 @@ def make_linear(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
 
 
 def make_quadratic(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
+    """
+
+    :param f0:
+    :type f0:
+    :param t1:
+    :type t1:
+    :param f1:
+    :type f1:
+    :param filename:
+    :type filename:
+    :param fig_size:
+    :type fig_size:
+    """
     t = numpy.linspace(0, t1, 5001)
     w = chirp(t, f0=f0, f1=f1, t1=t1, method="quadratic")
 
@@ -66,6 +92,19 @@ def make_quadratic(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
 
 
 def make_quadratic_v0false(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
+    """
+
+    :param f0:
+    :type f0:
+    :param t1:
+    :type t1:
+    :param f1:
+    :type f1:
+    :param filename:
+    :type filename:
+    :param fig_size:
+    :type fig_size:
+    """
     t = numpy.linspace(0, t1, 5001)
     w = chirp(t, f0=f0, f1=f1, t1=t1, method="quadratic", vertex_zero=False)
 
@@ -88,6 +127,19 @@ def make_quadratic_v0false(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
 
 
 def make_logarithmic(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
+    """
+
+    :param f0:
+    :type f0:
+    :param t1:
+    :type t1:
+    :param f1:
+    :type f1:
+    :param filename:
+    :type filename:
+    :param fig_size:
+    :type fig_size:
+    """
     t = numpy.linspace(0, t1, 5001)
     w = chirp(t, f0=f0, f1=f1, t1=t1, method="logarithmic")
 
@@ -112,6 +164,19 @@ def make_logarithmic(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
 
 
 def make_hyperbolic(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
+    """
+
+    :param f0:
+    :type f0:
+    :param t1:
+    :type t1:
+    :param f1:
+    :type f1:
+    :param filename:
+    :type filename:
+    :param fig_size:
+    :type fig_size:
+    """
     t = numpy.linspace(0, t1, 5001)
     w = chirp(t, f0=f0, f1=f1, t1=t1, method="hyperbolic")
 
@@ -135,6 +200,13 @@ def make_hyperbolic(f0, t1, f1, filename=None, fig_size=FIG_SIZE):
 
 
 def make_sweep_poly(filename=None, fig_size=FIG_SIZE):
+    """
+
+    :param filename:
+    :type filename:
+    :param fig_size:
+    :type fig_size:
+    """
     p = poly1d([0.05, -0.75, 2.5, 5.0])
 
     t = numpy.linspace(0, t1, 5001)

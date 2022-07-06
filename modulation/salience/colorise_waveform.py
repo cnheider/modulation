@@ -1,25 +1,36 @@
-from typing import Sequence, Optional
+from typing import Optional, Sequence
 
 import numpy
 from matplotlib import pyplot
 from matplotlib.collections import LineCollection
-from matplotlib.colors import ListedColormap, BoundaryNorm
+from matplotlib.colors import BoundaryNorm, ListedColormap
 from warg import Number
 
 
 def colorise_waveform_frequency_by_components():
+    """ """
     pass
 
 
 def colorise_waveform_by_salience():
+    """ """
     pass
 
 
 def color_plot(
-    xy,
+    xy: numpy.ndarray,
     colors: Optional[Sequence[Number]] = None,
     cmap=pyplot.cm.gist_rainbow,  # cmap=pyplot.cm.gist_ncar
-):
+) -> None:
+    """
+
+    :param xy:
+    :type xy:
+    :param colors:
+    :type colors:
+    :param cmap:
+    :type cmap:
+    """
     fig, ax = pyplot.subplots()
 
     # Reshape things so that we have a sequence of:
@@ -43,6 +54,7 @@ def color_plot(
 if __name__ == "__main__":
 
     def main():
+        """ """
         xy = (numpy.random.random((1000, 2)) - 0.5).cumsum(axis=0)
 
         color_plot(xy)

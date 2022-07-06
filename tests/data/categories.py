@@ -13,6 +13,7 @@ from modulation.data.audio.speech.recognition.speech_command import SpeechComman
 
 
 def labels_index_test():
+    """ """
     train_set = SpeechCommands()
 
     word_start = "yes"
@@ -23,6 +24,7 @@ def labels_index_test():
 
 
 def labels_index_same_test():
+    """ """
     train_set = SpeechCommands()
     valid_set = SpeechCommands(split=SplitEnum.validation)
     test_set = SpeechCommands(split=SplitEnum.testing)

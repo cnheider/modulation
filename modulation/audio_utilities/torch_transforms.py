@@ -6,10 +6,13 @@ import numpy
 import torch
 import torchaudio
 from torch import nn
+from torch.nn.functional import conv1d, pad
 from warg import passes_kws_to
 
 
 class PreEmphasis(torch.nn.Module):
+    """ """
+
     def __init__(self, coef: float = 0.97):
         super().__init__()
         self.coef = coef
@@ -21,12 +24,19 @@ class PreEmphasis(torch.nn.Module):
         )
 
     def forward(self, input: torch.tensor) -> torch.tensor:
+        """
+
+        :param input:
+        :type input:
+        :return:
+        :rtype:
+        """
         assert (
             len(input.size()) == 3
         ), "The number of dimensions of input tensor must be 3!"
         # reflect padding to match lengths of in/out
-        input = F.pad(input, (1, 0), "reflect")
-        return F.conv1d(input, self.flipped_filter)
+        input = pad(input, (1, 0), "reflect")
+        return conv1d(input, self.flipped_filter)
 
 
 class InversePreEmphasis(torch.nn.Module):
@@ -44,6 +54,13 @@ class InversePreEmphasis(torch.nn.Module):
         self.rnn.weight_hh_l0.data.fill_(self.coef)
 
     def forward(self, input: torch.tensor) -> torch.tensor:
+        """
+
+        :param input:
+        :type input:
+        :return:
+        :rtype:
+        """
         x, _ = self.rnn(input.transpose(1, 2))
         return x.transpose(1, 2)
 
@@ -75,6 +92,15 @@ class MelSpectrogram(nn.Module):
     def forward(
         self, samples: Union[numpy.ndarray, torch.Tensor], sample_rate: int
     ) -> torch.Tensor:
+        """
+
+        :param samples:
+        :type samples:
+        :param sample_rate:
+        :type sample_rate:
+        :return:
+        :rtype:
+        """
         if not isinstance(samples, torch.Tensor):
             samples = torch.tensor(samples)
         with warnings.catch_warnings():
@@ -128,6 +154,15 @@ class InverseSpectrogram(nn.Module):
     def forward(
         self, samples: Union[numpy.ndarray, torch.Tensor], sample_rate: int = None
     ) -> torch.Tensor:
+        """
+
+        :param samples:
+        :type samples:
+        :param sample_rate:
+        :type sample_rate:
+        :return:
+        :rtype:
+        """
         mag, phase = samples
         spec = torch.stack([torch.cos(phase) * mag, torch.sin(phase) * mag], dim=-1)
         with warnings.catch_warnings():

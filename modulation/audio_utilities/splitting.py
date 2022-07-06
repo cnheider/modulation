@@ -15,6 +15,15 @@ import numpy
 def mask_split_speech_silence(
     vad: Sequence, data: Sequence
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    """
+
+    :param vad:
+    :type vad:
+    :param data:
+    :type data:
+    :return:
+    :rtype:
+    """
     speech = []
     silence = []
     for n in range(min(len(data), len(vad))):

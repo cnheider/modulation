@@ -48,8 +48,8 @@ def blue_noise(length: int, seed: int = None) -> numpy.ndarray:
     x = rfft(white_noise(length, seed)) / length
 
     return normalise_signal(
-        irfft(x * numpy.sqrt(numpy.arange(len(x)))).real[:length]  # Filter
-    )
+        irfft(x * numpy.sqrt(numpy.arange(len(x)))).real[:length]
+    )  # Filter
 
 
 def brown_noise(length: int, seed: int = None) -> numpy.ndarray:
@@ -64,8 +64,8 @@ def brown_noise(length: int, seed: int = None) -> numpy.ndarray:
     """
     x = rfft(white_noise(length, seed)) / length
     return normalise_signal(
-        irfft(x / (numpy.arange(len(x)) + 1)).real[:length]  # Filter
-    )
+        irfft(x / (numpy.arange(len(x)) + 1)).real[:length]
+    )  # Filter
 
 
 def pink_noise(length: int, seed: int = None) -> numpy.ndarray:
@@ -93,8 +93,8 @@ def pink_noise(length: int, seed: int = None) -> numpy.ndarray:
         length // 2 + 1 + uneven
     )
     y = (
-        irfft(x / numpy.sqrt(numpy.arange(len(x)) + 1.0))  # +1 to avoid divide by zero
-    ).real
+        irfft(x / numpy.sqrt(numpy.arange(len(x)) + 1.0))
+    ).real  # +1 to avoid divide by zero
     if uneven:
         y = y[:-1]
     return normalise_signal(y)
@@ -124,7 +124,7 @@ def violet_noise(length: int, seed: int = None) -> numpy.ndarray:
 
 
 class GaussianNoiseTypeEnum(Enum):
-    r""""""
+    r"""description"""
     white = partial(
         white_noise
     )  # Partial to workaround interpreting as a method definition
@@ -145,6 +145,21 @@ def generate_noise(
     export_path: Path = None,
     sampling_rate: int = 16000,
 ) -> numpy.ndarray:
+    """
+
+    :param length:
+    :type length:
+    :param seed:
+    :type seed:
+    :param noise_type:
+    :type noise_type:
+    :param export_path:
+    :type export_path:
+    :param sampling_rate:
+    :type sampling_rate:
+    :return:
+    :rtype:
+    """
     normalised = noise_type(length, seed)
     if export_path:
         torchaudio.save(str(export_path), to_tensor(normalised), sampling_rate)
@@ -154,6 +169,7 @@ def generate_noise(
 if __name__ == "__main__":
 
     def asijsda():
+        """ """
         sampling_rate = 16000
         length_sec = 5
         noises = {}
@@ -183,4 +199,4 @@ if __name__ == "__main__":
         )
         pyplot.show()
 
-    asijsda()
+        asijsda()

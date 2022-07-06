@@ -22,6 +22,11 @@ res_folder = PROJECT_APP_PATH.user_log
 
 
 def soundplot(stream):
+    """
+
+    :param stream:
+    :type stream:
+    """
     t1 = time.time()
     data = numpy.frombuffer(stream.read(CHUNK), dtype=numpy.int16)
     pylab.plot(data)

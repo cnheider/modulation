@@ -7,6 +7,8 @@ __all__ = ["SignalGenerator"]
 
 
 class SignalGenerator:
+    """ """
+
     def __init__(self, *funcs: Union[Callable, Number], delta_time: float = 1.0):
         self.reset_internal_time()
         self.delta_time = delta_time
@@ -21,15 +23,28 @@ class SignalGenerator:
         return self.apply(self.t)
 
     def apply(self, t: float) -> float:
+        """
+
+        :param t:
+        :type t:
+        :return:
+        :rtype:
+        """
         return reduce(lambda x, y: x + y(t), self.funcs)
 
     def __call__(self, t: Iterable[Number]) -> Sequence:
         return [self.apply(i) for i in t]
 
     def reset_internal_time(self):
+        """ """
         self.t = 0.0
 
     def set_internal_time(self, t):
+        """
+
+        :param t:
+        :type t:
+        """
         self.t = t
 
     def __enter__(self):

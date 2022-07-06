@@ -74,6 +74,7 @@ def callback(in_data, frame_count, time_info, status):
 
 
 def main():
+    """ """
     p = pyaudio.PyAudio()
     stream = p.open(
         format=pyaudio.paInt32,

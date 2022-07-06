@@ -13,6 +13,8 @@ from torchaudio.datasets import COMMONVOICE
 
 
 class CommonVoice(COMMONVOICE):
+    """ """
+
     def __init__(self, root: str, n_threads=0):
         super().__init__(root, download=False)
         yesno_data = torchaudio.datasets.COMMONVOICE("", download=True)

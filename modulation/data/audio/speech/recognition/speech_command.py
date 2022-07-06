@@ -48,11 +48,18 @@ class SpeechCommands(SPEECHCOMMANDS):
         path: Path = Path.home() / "Data" / "Audio" / "Speech" / "SpeechCommands",
         *,
         split: SplitEnum = None,
-        version: str = "speech_commands_v0.02"
+        version: str = "speech_commands_v0.02",
     ):
         super().__init__(str(path.parent), download=False)  # Bad constructor, *bwahh'r*
 
         def load_list(filename: str):
+            """
+
+            :param filename:
+            :type filename:
+            :return:
+            :rtype:
+            """
             data_path = Path(self._path)
             filepath = data_path / filename
             with open(filepath) as f:
@@ -81,13 +88,32 @@ class SpeechCommands(SPEECHCOMMANDS):
 
     @property
     def categories(self) -> List:
+        """
+
+        :return:
+        :rtype:
+        """
         return self._categories
 
     def label_to_index(self, word: str) -> torch.Tensor:
+        """
+
+        :param word:
+        :type word:
+        :return:
+        :rtype:
+        """
         # Return the position of the word in labels
         return torch.tensor(self.categories.index(word))
 
     def index_to_label(self, index: int) -> str:
+        """
+
+        :param index:
+        :type index:
+        :return:
+        :rtype:
+        """
         # Return the word corresponding to the index in labels
         # This is the inverse of label_to_index
         return self.categories[index]
@@ -100,6 +126,7 @@ class SpeechCommands(SPEECHCOMMANDS):
 if __name__ == "__main__":
 
     def asda():
+        """ """
         train_set = SpeechCommands(split=SplitEnum.training)
         print(train_set.categories)
         a = torch.utils.data.DataLoader(

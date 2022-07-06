@@ -13,7 +13,7 @@ import numpy
 def fft_denoise(
     noisy_signal: numpy.ndarray, num_time_steps: int, cutoff_threshold: float = 100
 ) -> numpy.ndarray:
-    """"""
+    """description"""
 
     noisy_signal_f_coef = numpy.fft.fft(
         noisy_signal, num_time_steps

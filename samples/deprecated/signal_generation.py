@@ -14,6 +14,7 @@ from modulation.data.signal_generator import SignalGenerator
 if __name__ == "__main__":
 
     def asiuhda():
+        """ """
         from math import sin, cos
         from scipy.signal import square
 
@@ -35,6 +36,11 @@ if __name__ == "__main__":
         pyplot.show()
 
     def asduashdsdu():
+        """
+
+        :return:
+        :rtype:
+        """
         import numpy
         import scipy.signal
 
@@ -53,6 +59,7 @@ if __name__ == "__main__":
         sum([sine_wave(440, 4096), sine_wave(880, 4096)])
 
     def asiuhda2():
+        """ """
         from math import sin, cos
         from scipy.signal import square, sawtooth, gausspulse
         import numpy
@@ -72,6 +79,7 @@ sweep_poly(t, poly[, phi]) 	#Frequency-swept cosine generator, with a time-depen
         pyplot.show()
 
     def pygame_ex2():
+        """ """
         import numpy
         import pygame
 
@@ -113,6 +121,7 @@ sweep_poly(t, poly[, phi]) 	#Frequency-swept cosine generator, with a time-depen
         sound.stop()
 
     def asijasd():
+        """ """
         t = numpy.linspace(0, 10, 5001)
         w = chirp(t, f0=12.5, f1=2.5, t1=10, method="linear")
 
@@ -121,6 +130,11 @@ sweep_poly(t, poly[, phi]) 	#Frequency-swept cosine generator, with a time-depen
         w = sweep_poly(t, p)
 
     def pygame_ex1():
+        """
+
+        :return:
+        :rtype:
+        """
         import pygame, pygame.sndarray
         import numpy
         import scipy.signal
@@ -131,12 +145,30 @@ sweep_poly(t, poly[, phi]) 	#Frequency-swept cosine generator, with a time-depen
         pygame.init()
 
         def square_wave(hz, peak, duty_cycle=0.5, n_samples=sample_rate):
+            """
+
+            :param hz:
+            :type hz:
+            :param peak:
+            :type peak:
+            :param duty_cycle:
+            :type duty_cycle:
+            :param n_samples:
+            :type n_samples:
+            :return:
+            :rtype:
+            """
             t = numpy.linspace(0, 1, 500 * 440 / hz, endpoint=False)
             wave = scipy.signal.square(2 * numpy.pi * 5 * t, duty=duty_cycle)
             wave = numpy.resize(wave, (n_samples,))
             return peak / 2 * wave.astype(numpy.int16)
 
         def audio_freq(freq=800):
+            """
+
+            :param freq:
+            :type freq:
+            """
             global sound
             sample_wave = square_wave(freq, 4096)
             sound = pygame.sndarray.make_sound(sample_wave)

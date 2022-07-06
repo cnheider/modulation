@@ -9,6 +9,13 @@ from draugr import IgnoreInterruptSignal
 
 
 def main(keep_alive=True):
+    """
+
+    :param keep_alive:
+    :type keep_alive:
+    :return:
+    :rtype:
+    """
     from draugr.torch_utilities.writers.tensorboard.launcher import launch_tensorboard
     from time import sleep
 

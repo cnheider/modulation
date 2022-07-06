@@ -17,6 +17,8 @@ from torchaudio.datasets import LIBRISPEECH
 
 
 class LibriSpeech(LIBRISPEECH):
+    """ """
+
     class LibriSpeechSubsets(Enum):
         dev_clean = "dev-clean"
         dev_other = "dev-other"
@@ -37,7 +39,7 @@ class LibriSpeech(LIBRISPEECH):
         path: Path = Path.home() / "Data" / "Audio" / "Speech" / "LibriSpeech",
         split: SplitEnum = None,
         subset: LibriSpeechSubsets = LibriSpeechSubsets.train_clean_100,
-        custom_subset: CustomSubsets = None
+        custom_subset: CustomSubsets = None,
     ):
         super().__init__(str(path), download=False, url=subset.value)
 
@@ -92,11 +94,13 @@ class LibriSpeech(LIBRISPEECH):
 if __name__ == "__main__":
 
     def asd123asda():
+        """ """
         d = LibriSpeech(path=Path.home() / "Data" / "Audio" / "Speech" / "LibriSpeech")
         for i, s in zip(range(2), d):
             print(i, type(s[-3]))
 
     def asda():
+        """ """
         d = LibriSpeech(
             path=Path.home() / "Data" / "Audio" / "Speech" / "LibriSpeech",
             custom_subset=LibriSpeech.CustomSubsets.male,
@@ -105,6 +109,7 @@ if __name__ == "__main__":
             print(i, s)
 
     def asidhja():
+        """ """
         samples = 6
         d_male = iter(
             LibriSpeech(

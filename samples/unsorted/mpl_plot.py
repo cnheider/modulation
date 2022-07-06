@@ -8,7 +8,7 @@ __doc__ = r"""
            """
 
 import numpy
-import pyaudio
+import pyaudio  # sudo apt-get install python3-pyaudio
 from draugr.drawers import discrete_scroll_plot
 from matplotlib import pyplot
 

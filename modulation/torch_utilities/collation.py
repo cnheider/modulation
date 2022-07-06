@@ -24,6 +24,11 @@ import wave
 
 # shows the sound waves
 def visualize(path: str):
+    """
+
+    :param path:
+    :type path:
+    """
     # reading the audio file
     raw = wave.open(path)
 
@@ -51,6 +56,14 @@ def visualize(path: str):
 
 
 def collate_pad_wrapped(device: Device = global_torch_device()) -> callable:
+    """
+
+    :param device:
+    :type device:
+    :return:
+    :rtype:
+    """
+
     def collate_fn(batch):
         """
         Pads batch of variable length
@@ -82,6 +95,20 @@ def collate_transform_wrapped(
     min_length: int = 16000,
     device: Device = global_torch_device(),
 ) -> callable:
+    """
+
+    :param mapping_func:
+    :type mapping_func:
+    :param transform:
+    :type transform:
+    :param min_length:
+    :type min_length:
+    :param device:
+    :type device:
+    :return:
+    :rtype:
+    """
+
     def collate_fn(batch: Iterable[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         To turn a list of data point made of audio recordings and utterances

@@ -8,6 +8,8 @@ import modulation.audio_utilities.torch_transforms
 
 
 class UNetConvBlock(nn.Module):
+    """ """
+
     def __init__(self, in_channels: int, out_channels: int, kernel_size: int):
         super().__init__()
         self.conv = nn.Sequential(
@@ -23,10 +25,19 @@ class UNetConvBlock(nn.Module):
         )
 
     def forward(self, x):
+        """
+
+        :param x:
+        :type x:
+        :return:
+        :rtype:
+        """
         return self.conv(x)
 
 
 class UNetDeconvBlock(nn.Module):
+    """ """
+
     def __init__(
         self,
         in_channels: int,
@@ -203,6 +214,15 @@ class UNet(
         )
 
     def training_step(self, batch, batch_idx):
+        """
+
+        :param batch:
+        :type batch:
+        :param batch_idx:
+        :type batch_idx:
+        :return:
+        :rtype:
+        """
         (
             loss,
             *_,
@@ -212,6 +232,15 @@ class UNet(
         return loss
 
     def validation_step(self, batch, batch_idx):
+        """
+
+        :param batch:
+        :type batch:
+        :param batch_idx:
+        :type batch_idx:
+        :return:
+        :rtype:
+        """
         # Calculate losses and results in training and inference modes
         (
             loss,
@@ -264,6 +293,11 @@ class UNet(
     #     self.logger.experiment.log({"Inferenced audio": inf_audio}, commit=False)
 
     def configure_optimizers(self):
+        """
+
+        :return:
+        :rtype:
+        """
         optimizer = torch.optim.Adam(self.parameters(), lr=self.optimizer_lr)
         # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5, patience=5, min_lr=1e-5)
         return {

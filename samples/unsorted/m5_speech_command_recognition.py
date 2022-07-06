@@ -43,12 +43,33 @@ def main(
     batch_size=256,
     new_sample_rate=8000,
     train: bool = True,
-    load_previous: bool = True,
+    load_previous_model: bool = True,
     model_name="m5_speech_command",
     model_storage_path=PROJECT_APP_PATH.user_data / "speech_command" / "models",
     data_path=Path.home() / "Data" / "Audio" / "SpeechCommands",
     drop_last_train=False,
 ):
+    """
+
+    :param n_epoch:
+    :type n_epoch:
+    :param batch_size:
+    :type batch_size:
+    :param new_sample_rate:
+    :type new_sample_rate:
+    :param train:
+    :type train:
+    :param load_previous_model:
+    :type load_previous_model:
+    :param model_name:
+    :type model_name:
+    :param model_storage_path:
+    :type model_storage_path:
+    :param data_path:
+    :type data_path:
+    :param drop_last_train:
+    :type drop_last_train:
+    """
     device = global_torch_device(True)
 
     if device == "cuda":
@@ -73,7 +94,7 @@ def main(
     persistence_model_name = (
         f"{model_name}_{get_model_hash(transform)}_{get_model_hash(model)}"
     )
-    if load_previous:
+    if load_previous_model:
         candidate = load_model(
             model_name=persistence_model_name,
             model_directory=model_storage_path,
@@ -137,6 +158,35 @@ def train_proc(
     device,
     data_path,
 ):
+    """
+
+    :param model:
+    :type model:
+    :param collate_fn:
+    :type collate_fn:
+    :param train_set:
+    :type train_set:
+    :param n_epoch:
+    :type n_epoch:
+    :param persistence_model_name:
+    :type persistence_model_name:
+    :param drop_last_train:
+    :type drop_last_train:
+    :param model_storage_path:
+    :type model_storage_path:
+    :param batch_size:
+    :type batch_size:
+    :param model_name:
+    :type model_name:
+    :param num_workers:
+    :type num_workers:
+    :param pin_memory:
+    :type pin_memory:
+    :param device:
+    :type device:
+    :param data_path:
+    :type data_path:
+    """
     train_loader = DataLoader(
         train_set,
         batch_size=batch_size,
@@ -198,6 +248,25 @@ def train_proc(
 def stest_proc(
     model, collate_fn, train_set, model_name, num_workers, pin_memory, device, data_path
 ):
+    """
+
+    :param model:
+    :type model:
+    :param collate_fn:
+    :type collate_fn:
+    :param train_set:
+    :type train_set:
+    :param model_name:
+    :type model_name:
+    :param num_workers:
+    :type num_workers:
+    :param pin_memory:
+    :type pin_memory:
+    :param device:
+    :type device:
+    :param data_path:
+    :type data_path:
+    """
     seed_stack(0)
     with TensorBoardPytorchWriter(
         PROJECT_APP_PATH.user_log / model_name / str(time.time())

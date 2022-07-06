@@ -86,6 +86,7 @@ def min_length_pad(
 if __name__ == "__main__":
 
     def a():
+        """ """
         base = 5
         stair_length = 9
         stair = [to_tensor(range(i + base)) for i in range(stair_length)]

@@ -17,6 +17,7 @@ x_db = 10 * numpy.log10(x_watts)
 
 
 def a():
+    """ """
     # Signal Generation
     # matplotlib inline
 
@@ -43,6 +44,7 @@ def a():
 
 
 def noise():
+    """ """
     # Adding noise using target SNR
 
     target_snr_db = 20  # Set a target SNR
@@ -81,6 +83,7 @@ def noise():
 
 
 def spectrogram():
+    """ """
     from scipy import signal
     from matplotlib import pyplot
     import numpy
@@ -121,6 +124,7 @@ spectrogram()
 
 
 def known_noise():
+    """ """
     # Adding noise using a target noise power
 
     target_noise_db = 10  # Set a target channel noise power to something very noisy

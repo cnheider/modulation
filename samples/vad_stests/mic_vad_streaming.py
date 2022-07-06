@@ -41,6 +41,19 @@ class Audio(object):
 
     def __init__(self, callback=None, device=None, input_rate=RATE_PROCESS, file=None):
         def proxy_callback(in_data, frame_count, time_info, status):
+            """
+
+            :param in_data:
+            :type in_data:
+            :param frame_count:
+            :type frame_count:
+            :param time_info:
+            :type time_info:
+            :param status:
+            :type status:
+            :return:
+            :rtype:
+            """
             # pylint: disable=unused-argument
             if self.chunk is not None:
                 in_data = self.wf.readframes(self.chunk)
@@ -102,6 +115,7 @@ class Audio(object):
         return self.buffer_queue.get()
 
     def destroy(self):
+        """ """
         self.stream.stop_stream()
         self.stream.close()
         self.pa.terminate()
@@ -111,6 +125,13 @@ class Audio(object):
     )
 
     def write_wav(self, filename, data):
+        """
+
+        :param filename:
+        :type filename:
+        :param data:
+        :type data:
+        """
         logging.info("write wav %s", filename)
         wf = wave.open(filename, "wb")
         wf.setnchannels(self.CHANNELS)
@@ -176,6 +197,11 @@ class VADAudio(Audio):
 
 
 def main(ARGS):
+    """
+
+    :param ARGS:
+    :type ARGS:
+    """
     if os.path.isdir(ARGS.model):  # Load DeepSpeech model
         model_dir = ARGS.model
         ARGS.model = os.path.join(model_dir, "output_graph.pb")

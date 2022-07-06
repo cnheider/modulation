@@ -9,23 +9,55 @@ __doc__ = r"""
 
 import numpy
 import torch
-from draugr import next_pow_2
+from warg import next_pow_2
 from scipy.signal import lfilter, hilbert
 
 
 def mel_scale(x):
+    """
+
+    :param x:
+    :type x:
+    :return:
+    :rtype:
+    """
     return 2595.0 * numpy.log10(1.0 + x / 700.0)
 
 
 def in_mel_scale(x):
+    """
+
+    :param x:
+    :type x:
+    :return:
+    :rtype:
+    """
     return 700 * (10 ** (x / 2595.0) - 1)
 
 
 def pre_emphasise(x, coeff: float = 0.97):
+    """
+
+    :param x:
+    :type x:
+    :param coeff:
+    :type coeff:
+    :return:
+    :rtype:
+    """
     return lfilter([1, -coeff], [1], x)
 
 
 def de_emphasise(x, coeff: float = 0.97):
+    """
+
+    :param x:
+    :type x:
+    :param coeff:
+    :type coeff:
+    :return:
+    :rtype:
+    """
     return lfilter([1], [1, -coeff], x)
 
 
@@ -40,6 +72,15 @@ def pre_emphasise_torch(signal, preemph: float = 0.97):
 
 
 def fft_frequencies(sr=16000, n_fft=512):
+    """
+
+    :param sr:
+    :type sr:
+    :param n_fft:
+    :type n_fft:
+    :return:
+    :rtype:
+    """
     return numpy.linspace(0, float(sr) / 2, int(1 + n_fft // 2), endpoint=True)
 
 
@@ -70,6 +111,7 @@ if __name__ == "__main__":
     # print(len(fft_frequencies())) # oneside
     # print(len(numpy.fft.fftfreq(512)))
     def aijsda():
+        """ """
         a = list(range(1, 9 + 1))
         b = pre_emphasise(a)
         c = de_emphasise(b)

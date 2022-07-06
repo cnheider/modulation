@@ -15,6 +15,7 @@ import pyaudio
 
 
 def a():
+    """ """
     sr = 44100
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=sr, input=True)
@@ -32,7 +33,15 @@ def a():
 
 
 def b():
+    """
+
+    :return:
+    :rtype:
+    """
+
     class AudioHandler(object):
+        """ """
+
         def __init__(self):
             self.FORMAT = pyaudio.paFloat32
             self.CHANNELS = 1
@@ -42,6 +51,7 @@ def b():
             self.stream = None
 
         def start(self):
+            """ """
             self.p = pyaudio.PyAudio()
             self.stream = self.p.open(
                 format=self.FORMAT,
@@ -54,16 +64,31 @@ def b():
             )
 
         def stop(self):
+            """ """
             self.stream.close()
             self.p.terminate()
 
         def callback(self, in_data, frame_count, time_info, flag):
+            """
+
+            :param in_data:
+            :type in_data:
+            :param frame_count:
+            :type frame_count:
+            :param time_info:
+            :type time_info:
+            :param flag:
+            :type flag:
+            :return:
+            :rtype:
+            """
             numpy_array = numpy.frombuffer(in_data, dtype=numpy.float32)
             a = librosa.feature.mfcc(numpy_array)
             print(a)
             return None, pyaudio.paContinue
 
         def mainloop(self):
+            """ """
             while (
                 self.stream.is_active()
             ):  # if using button you can set self.stream to 0 (self.stream = 0), otherwise you can use a stop condition

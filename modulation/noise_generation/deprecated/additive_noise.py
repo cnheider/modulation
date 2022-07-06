@@ -19,6 +19,19 @@ from modulation.audio_utilities.signal_statistics import root_mean_square
 def additive_white_noise(
     signal, signal_noise_ratio, sampling_rate, export_path=None
 ) -> Iterable:
+    """
+
+    :param signal:
+    :type signal:
+    :param signal_noise_ratio:
+    :type signal_noise_ratio:
+    :param sampling_rate:
+    :type sampling_rate:
+    :param export_path:
+    :type export_path:
+    :return:
+    :rtype:
+    """
     noise = numpy.random.normal(
         0,
         math.sqrt(root_mean_square(signal) ** 2 / (pow(10, signal_noise_ratio / 10))),
@@ -32,6 +45,7 @@ def additive_white_noise(
 if __name__ == "__main__":
 
     def asda():
+        """ """
         from modulation.data.audio.speech.recognition.libri_speech import LibriSpeech
         from pathlib import Path
 

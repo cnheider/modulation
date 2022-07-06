@@ -17,6 +17,19 @@ import soundfile
 def audio_read(
     path: str, norm: bool = True, start: int = 0, stop: int = None
 ) -> Tuple[numpy.ndarray, int]:
+    """
+
+    :param path:
+    :type path:
+    :param norm:
+    :type norm:
+    :param start:
+    :type start:
+    :param stop:
+    :type stop:
+    :return:
+    :rtype:
+    """
     path = os.path.abspath(path)
     if not os.path.exists(path):
         raise ValueError(f"[{path}] does not exist!")
@@ -43,6 +56,17 @@ def audio_read(
 def audio_write(
     data: numpy.ndarray, fs: int, dest_path: str, norm: bool = False
 ) -> None:
+    """
+
+    :param data:
+    :type data:
+    :param fs:
+    :type fs:
+    :param dest_path:
+    :type dest_path:
+    :param norm:
+    :type norm:
+    """
     if norm:
         rms = (data**2).mean() ** 0.5
         scalar = 10 ** (-25 / 10) / (rms + numpy.eps)

@@ -46,6 +46,13 @@ class M5(torch.nn.Module):
         self.fc1 = torch.nn.Linear(2 * n_channel, n_output)
 
     def forward(self, x):
+        """
+
+        :param x:
+        :type x:
+        :return:
+        :rtype:
+        """
         x = torch.relu(self.bn1(self.conv1(x)))
         x = torch.relu(self.bn2(self.conv2(self.pool1(x))))
         x = torch.relu(self.bn3(self.conv3(self.pool2(x))))

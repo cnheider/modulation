@@ -4,10 +4,10 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = Neo
+SPHINXPROJ    = Modulation
 SOURCEDIR     = source
-BUILDDIR      = build
-PYCMD 				= python
+BUILDDIR      = ../docs/github
+PYCMD         = python
 
 # Put it first so that "make" without argument is like "make help".
 help:

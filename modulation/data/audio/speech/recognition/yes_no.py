@@ -13,6 +13,8 @@ from torchaudio.datasets import YESNO
 
 
 class YesNo(YESNO):
+    """ """
+
     def __init__(self, root: str, n_threads=0):
         super().__init__(root, download=False)
 

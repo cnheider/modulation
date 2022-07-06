@@ -28,6 +28,21 @@ def sample_noise(
     *,
     resample_noise: bool = True,
 ) -> Any:
+    """
+
+    :param noise:
+    :type noise:
+    :param noise_rate:
+    :type noise_rate:
+    :param signal_len:
+    :type signal_len:
+    :param signal_rate:
+    :type signal_rate:
+    :param resample_noise:
+    :type resample_noise:
+    :return:
+    :rtype:
+    """
     noise_len = len(noise)
     if resample_noise:
         noise = signal.resample(
@@ -49,6 +64,23 @@ def compute_additive_noise_samples(
     snrs=list((i * 5 for i in range(5))),
     verbose: bool = False,
 ) -> None:
+    """
+
+    :param voice_activity_mask:
+    :type voice_activity_mask:
+    :param signal_file:
+    :type signal_file:
+    :param category:
+    :type category:
+    :param out_dir:
+    :type out_dir:
+    :param noise_file:
+    :type noise_file:
+    :param snrs:
+    :type snrs:
+    :param verbose:
+    :type verbose:
+    """
     sr_noise, noise = wavfile.read(str(noise_file))
     sr_signal, signal = wavfile.read(str(signal_file))
 

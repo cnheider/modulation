@@ -1,6 +1,6 @@
-# Contributing To The Neodroid Platform
+# Contributing To Modulation
 
-These guidelines are universal for the entire [Neodroid](https://github.com/sintefneodroid) Platform
+These guidelines are universal for the entire [Modulation](https://github.com/aivclab/modulation) Platform
 
 ## Pull Requests
 
@@ -20,4 +20,4 @@ We use GitHub issues to track public bugs. Please ensure your description is cle
 
 ## License
 
-By contributing to the [Neodroid](https://github.com/sintefneodroid) platform, you agree that your contributions will be licensed under the LICENSE file in the root directory of this repository.
+By contributing to the [Modulation](https://github.com/aivclab/modulation) , you agree that your contributions will be licensed under the LICENSE file in the root directory of this repository.

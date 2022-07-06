@@ -8,12 +8,25 @@ pyplot.style.use("dark_background")  # dark theme
 
 
 def calculate_phase_from_focus(x, y, e):
+    """
+
+    :param x:
+    :type x:
+    :param y:
+    :type y:
+    :param e:
+    :type e:
+    :return:
+    :rtype:
+    """
     return numpy.sqrt(numpy.sum((e.r - numpy.array([x, y])) ** 2)) * (
         2 * numpy.pi / e.lambda0
     )
 
 
 class Emitter:
+    """ """
+
     def __init__(self, x, y, c, f, phi, rMax=100, color="tab:blue", alpha=0.6):
         self.r, self.c, self.f, self.rMax, self.alpha = (
             numpy.array([x, y]),
@@ -27,6 +40,13 @@ class Emitter:
         self.set_phase(phi)
 
     def increment(self, dt):
+        """
+
+        :param dt:
+        :type dt:
+        :return:
+        :rtype:
+        """
         self.t += dt
         if self.t < self.t0:
             return
@@ -39,11 +59,17 @@ class Emitter:
             circle.set_alpha(self.alpha if i < ((self.t - self.t0) / self.T) else 0)
 
     def set_phase(self, phi):
+        """
+
+        :param phi:
+        :type phi:
+        """
         self.phi = self.wrap(phi, 2 * numpy.pi)
         self.t0 = self.T * (1 - self.phi / (2 * numpy.pi))
         self.t = 0
 
     def set_up(self):
+        """ """
         self.lambda0 = self.c / self.f
         self.T = 1.0 / self.f
         self.N = numpy.int32(numpy.ceil(self.rMax / self.lambda0))
@@ -60,6 +86,15 @@ class Emitter:
         ]
 
     def wrap(self, x, x_max):
+        """
+
+        :param x:
+        :type x:
+        :param x_max:
+        :type x_max:
+        :return:
+        :rtype:
+        """
         if x >= 0:
             return x - numpy.floor(x / x_max) * x_max
         if x < 0:
@@ -67,13 +102,25 @@ class Emitter:
 
 
 class EmitterArray:
+    """ """
+
     def __init__(self):
         self.emitters = []
 
     def add_emitter(self, e):
+        """
+
+        :param e:
+        :type e:
+        """
         self.emitters.append(e)
 
     def increment(self, dt):
+        """
+
+        :param dt:
+        :type dt:
+        """
         for emitter in self.emitters:
             emitter.increment(dt)
 
@@ -95,10 +142,20 @@ class EmitterArray:
 
     @property
     def circles(self):
+        """
+
+        :return:
+        :rtype:
+        """
         return self.get_circles()
 
 
 def asd():
+    """
+
+    :return:
+    :rtype:
+    """
     FPS = 30
     X, Y = 100, 100
     c, f = 3, 0.2
@@ -211,9 +268,21 @@ def asd():
         ax.add_patch(pyplot.Circle(tuple(emitter.r), 0.4, color="purple"))
 
     def init():
+        """
+
+        :return:
+        :rtype:
+        """
         return tuple(emitter_array.circles)
 
     def update(frame_number):
+        """
+
+        :param frame_number:
+        :type frame_number:
+        :return:
+        :rtype:
+        """
         emitter_array.increment(1 / FPS)
         return tuple(emitter_array.circles)
 

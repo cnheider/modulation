@@ -12,7 +12,7 @@ from typing import Iterable
 
 import numpy
 import torchaudio
-from draugr import next_pow_2
+from warg import next_pow_2
 from draugr.numpy_utilities import zero_pad_to_power_2
 from draugr.random_utilities.seeding import numpy_seed
 from draugr.torch_utilities import to_tensor
@@ -35,7 +35,7 @@ def spectrum_like_noise(
     seed: int = 42,
     window_length_sec: float = 20 / 1000,  # 20 ms
     p_overlap: float = 0.5,
-    long_term_avg: bool = True
+    long_term_avg: bool = True,
 ) -> numpy.ndarray:
     """Create a noise with same spectrum as the input signal.
     randomises phase
@@ -135,7 +135,7 @@ def generate_speech_shaped_noise(
     export_path: Path = None,
     long_term_avg=True,
     window_length_sec=20 / 1000,
-    p_overlap=0.5
+    p_overlap=0.5,
 ) -> Iterable:
     """
     White (flat-spectrum) noise has more energy at high frequencies, and therefore produces more masking of the higher formants and frication noises than speech-shaped noise, speech shaped noise mask evenly throughout the speech signal spectrum
@@ -157,6 +157,7 @@ def generate_speech_shaped_noise(
 if __name__ == "__main__":
 
     def reald():
+        """ """
         from draugr.visualisation import ltass_plot
         from modulation.data.audio.speech.recognition.libri_speech import LibriSpeech
 
@@ -192,6 +193,7 @@ if __name__ == "__main__":
         pyplot.show()
 
     def synth():
+        """ """
         from draugr.visualisation import ltass_plot
         from modulation.data.audio.speech.recognition.libri_speech import LibriSpeech
 
@@ -229,6 +231,7 @@ if __name__ == "__main__":
         pyplot.show()
 
     def distinct_real():
+        """ """
         from draugr.visualisation import ltass_plot
         from modulation.data.audio.speech.recognition.libri_speech import LibriSpeech
 

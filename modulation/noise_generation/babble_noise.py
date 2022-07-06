@@ -24,6 +24,17 @@ def generate_babble_noise(
     *,
     export_path: Path = None,
 ) -> Iterable:
+    """
+
+    :param samples:
+    :type samples:
+    :param sampling_rate:
+    :type sampling_rate:
+    :param export_path:
+    :type export_path:
+    :return:
+    :rtype:
+    """
     samples = numpy.array(min_length_truncate_batch(samples))
     mixed = numpy.sum(samples / numpy.max(numpy.abs(samples)), 0)
     if export_path:
@@ -34,6 +45,7 @@ def generate_babble_noise(
 if __name__ == "__main__":
 
     def main():
+        """ """
         from modulation.data.audio.speech.recognition.libri_speech import LibriSpeech
         from draugr.visualisation import dissected_channel_plot
 

@@ -30,6 +30,21 @@ def single_epoch_fitting(
     writer: Writer = None,
     device_: torch.device = global_torch_device(),
 ) -> None:
+    """
+
+    :param model:
+    :type model:
+    :param optimiser:
+    :type optimiser:
+    :param train_loader_:
+    :type train_loader_:
+    :param epoch:
+    :type epoch:
+    :param writer:
+    :type writer:
+    :param device_:
+    :type device_:
+    """
     accum_loss = 0
     num_batches = len(train_loader_)
 
@@ -58,6 +73,23 @@ def single_epoch_evaluation(
     writer: Writer = None,
     device: torch.device = global_torch_device(),
 ) -> float:
+    """
+
+    :param model:
+    :type model:
+    :param evaluation_loader:
+    :type evaluation_loader:
+    :param subset:
+    :type subset:
+    :param epoch:
+    :type epoch:
+    :param writer:
+    :type writer:
+    :param device:
+    :type device:
+    :return:
+    :rtype:
+    """
     correct = 0
     num_batches = len(evaluation_loader)
     with TorchEvalSession(model):
