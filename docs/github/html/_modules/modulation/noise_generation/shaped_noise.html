@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'/>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'/>
+    <title>modulation.noise_generation.shaped_noise &#8212; modulation 0.0.1 documentation</title>
+    <link rel='stylesheet' type='text/css' href='../../../_static/pygments.css'/>
+    <link rel='stylesheet' type='text/css' href='../../../_static/alabaster.css'/>
+    <link rel='stylesheet' type='text/css' href='../../../_static/graphviz.css'/>
+    <script data-url_root='../../../' id='documentation_options' src='../../../_static/documentation_options.js'></script>
+    <script src='../../../_static/jquery.js'></script>
+    <script src='../../../_static/underscore.js'></script>
+    <script src='../../../_static/_sphinx_javascript_frameworks_compat.js'></script>
+    <script src='../../../_static/doctools.js'></script>
+    <link rel='canonical' href='aivclab.github.io/modulation/_modules/modulation/noise_generation/shaped_noise.html'/>
+    <link rel='index' title='Index' href='../../../genindex.html'/>
+    <link rel='search' title='Search' href='../../../search.html'/>
+
+    <link rel='stylesheet' href='../../../_static/custom.css' type='text/css'/>
+
+
+    <meta name='viewport' content='width=device-width, initial-scale=0.9, maximum-scale=0.9'/>
+
+  </head>
+  <body>
+
+
+    <div class='document'>
+      <div class='documentwrapper'>
+        <div class='bodywrapper'>
+
+
+          <div class='body' role='main'>
+
+            <h1>Source code for modulation.noise_generation.shaped_noise</h1>
+            <div class='highlight'><pre>
+<span></span><span class='ch'>#!/usr/bin/env python3</span>
+<span class='c1'># -*- coding: utf-8 -*-</span>
+
+<span class='n'>__author__</span> <span class='o'>=</span> <span class='s2'>&quot;Christian Heider Nielsen&quot;</span>
+<span class='vm'>__doc__</span> <span class='o'>=</span> <span class='sa'>r</span><span class='s2'>&quot;&quot;&quot;</span>
+
+<span class='s2'>           Created on 09-12-2020</span>
+<span class='s2'>           &quot;&quot;&quot;</span>
+
+<span class='kn'>from</span> <span class='nn'>pathlib</span> <span class='kn'>import</span> <span class='n'>Path</span>
+<span class='kn'>from</span> <span class='nn'>typing</span> <span class='kn'>import</span> <span class='n'>Iterable</span>
+
+<span class='kn'>import</span> <span class='nn'>numpy</span>
+<span class='kn'>import</span> <span class='nn'>torchaudio</span>
+<span class='kn'>from</span> <span class='nn'>warg</span> <span class='kn'>import</span> <span class='n'>next_pow_2</span>
+<span class='kn'>from</span> <span class='nn'>draugr.numpy_utilities</span> <span class='kn'>import</span> <span class='n'>zero_pad_to_power_2</span>
+<span class='kn'>from</span> <span class='nn'>draugr.random_utilities.seeding</span> <span class='kn'>import</span> <span class='n'>numpy_seed</span>
+<span class='kn'>from</span> <span class='nn'>draugr.torch_utilities</span> <span class='kn'>import</span> <span class='n'>to_tensor</span>
+<span class='kn'>from</span> <span class='nn'>matplotlib</span> <span class='kn'>import</span> <span class='n'>pyplot</span>
+<span class='kn'>from</span> <span class='nn'>numpy</span> <span class='kn'>import</span> <span class='n'>fft</span>
+<span class='kn'>from</span> <span class='nn'>scipy.signal</span> <span class='kn'>import</span> <span class='n'>butter</span><span class='p'>,</span> <span class='n'>filtfilt</span><span class='p'>,</span> <span class='n'>welch</span>
+
+<span class='kn'>from</span> <span class='nn'>modulation.audio_utilities.funcs</span> <span class='kn'>import</span> <span class='n'>hilbert_envelope</span>
+
+<span class='n'>__all__</span> <span class='o'>=</span> <span class='p'>[</span><span class='s2'>&quot;generate_speech_shaped_noise&quot;</span><span class='p'>]</span>
+
+
+<span class='k'>def</span> <span class='nf'>spectrum_like_noise</span><span class='p'>(</span>
+    <span class='n'>signal</span><span class='p'>:</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>ndarray</span><span class='p'>,</span>
+    <span class='o'>*</span><span class='p'>,</span>
+    <span class='n'>sampling_rate</span><span class='o'>=</span><span class='mi'>40000</span><span class='p'>,</span>
+    <span class='n'>keep_signal_amp_envelope</span><span class='o'>=</span><span class='kc'>False</span><span class='p'>,</span>
+    <span class='n'>low_pass_cutoff</span><span class='o'>=</span><span class='mi'>50</span><span class='p'>,</span>  <span class='c1'># Hz</span>
+    <span class='n'>low_pass_order</span><span class='o'>=</span><span class='mi'>6</span><span class='p'>,</span>
+    <span class='n'>seed</span><span class='p'>:</span> <span class='nb'>int</span> <span class='o'>=</span> <span class='mi'>42</span><span class='p'>,</span>
+    <span class='n'>window_length_sec</span><span class='p'>:</span> <span class='nb'>float</span> <span class='o'>=</span> <span class='mi'>20</span> <span class='o'>/</span> <span class='mi'>1000</span><span class='p'>,</span>  <span class='c1'># 20 ms</span>
+    <span class='n'>p_overlap</span><span class='p'>:</span> <span class='nb'>float</span> <span class='o'>=</span> <span class='mf'>0.5</span><span class='p'>,</span>
+    <span class='n'>long_term_avg</span><span class='p'>:</span> <span class='nb'>bool</span> <span class='o'>=</span> <span class='kc'>True</span><span class='p'>,</span>
+<span class='p'>)</span> <span class='o'>-&gt;</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>ndarray</span><span class='p'>:</span>
+    <span class='sd'>&quot;&quot;&quot;Create a noise with same spectrum as the input signal.</span>
+<span class='sd'>    randomises phase</span>
+
+<span class='sd'>    Parameters</span>
+<span class='sd'>    ----------</span>
+<span class='sd'>    signal : array_like</span>
+<span class='sd'>        Input signal.</span>
+<span class='sd'>    sampling_rate : int</span>
+<span class='sd'>         Sampling frequency of the input signal. (Default value = 40000)</span>
+<span class='sd'>    keep_signal_amp_envelope : bool</span>
+<span class='sd'>         Apply the envelope of the original signal to the noise. (Default</span>
+<span class='sd'>         value = False)</span>
+<span class='sd'>    low_pass_cutoff : float</span>
+<span class='sd'>    low_pass_order : int</span>
+<span class='sd'>    seed : int</span>
+<span class='sd'>    long_term_avg : bool</span>
+<span class='sd'>    window_length_sec: int</span>
+<span class='sd'>    p_overlap: float</span>
+
+
+<span class='sd'>    Returns</span>
+<span class='sd'>    -------</span>
+<span class='sd'>    ndarray</span>
+<span class='sd'>        Noise signal.</span>
+
+<span class='sd'>    &quot;&quot;&quot;</span>
+    <span class='k'>assert</span> <span class='n'>window_length_sec</span> <span class='o'>&gt;</span> <span class='mi'>0</span>
+    <span class='k'>assert</span> <span class='mi'>0</span> <span class='o'>&lt;=</span> <span class='n'>p_overlap</span> <span class='o'>&lt;=</span> <span class='mi'>1</span>
+    <span class='n'>signal</span> <span class='o'>=</span> <span class='n'>zero_pad_to_power_2</span><span class='p'>(</span><span class='n'>signal</span><span class='p'>)</span>  <span class='c1'># Ensure welch works with any window size</span>
+    <span class='n'>signal_length</span> <span class='o'>=</span> <span class='n'>signal</span><span class='o'>.</span><span class='n'>shape</span><span class='p'>[</span><span class='o'>-</span><span class='mi'>1</span><span class='p'>]</span>
+    <span class='n'>window_sum_squares</span> <span class='o'>=</span> <span class='n'>signal_length</span>  <span class='c1'># scaling factor defined as sum of squared samples of window function</span>
+    <span class='n'>sc</span> <span class='o'>=</span> <span class='mi'>2</span> <span class='o'>/</span> <span class='p'>(</span>
+        <span class='n'>sampling_rate</span> <span class='o'>*</span> <span class='n'>window_sum_squares</span>
+    <span class='p'>)</span>  <span class='c1'># Scaling coefficient 2 takes into account removal of energy at negative frequencies (we drop this side of PSD)</span>
+
+    <span class='k'>if</span> <span class='ow'>not</span> <span class='n'>long_term_avg</span><span class='p'>:</span>
+        <span class='n'>n_fft</span> <span class='o'>=</span> <span class='n'>next_pow_2</span><span class='p'>(</span><span class='n'>signal_length</span><span class='p'>)</span>
+        <span class='n'>spec</span> <span class='o'>=</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>abs</span><span class='p'>(</span><span class='n'>fft</span><span class='o'>.</span><span class='n'>rfft</span><span class='p'>(</span><span class='n'>signal</span><span class='p'>,</span> <span class='n'>n_fft</span><span class='p'>))</span>
+        <span class='n'>psd</span> <span class='o'>=</span> <span class='p'>(</span><span class='n'>spec</span><span class='o'>**</span><span class='mi'>2</span><span class='p'>)</span> <span class='o'>*</span> <span class='n'>sc</span>
+    <span class='k'>else</span><span class='p'>:</span>
+        <span class='n'>n_per_seg</span> <span class='o'>=</span> <span class='n'>next_pow_2</span><span class='p'>(</span><span class='nb'>int</span><span class='p'>(</span><span class='n'>sampling_rate</span> <span class='o'>*</span> <span class='n'>window_length_sec</span><span class='p'>))</span>  <span class='c1'># next_pow_2 per seg == n_fft</span>
+        <span class='n'>n_overlap</span> <span class='o'>=</span> <span class='nb'>int</span><span class='p'>(</span><span class='n'>n_per_seg</span> <span class='o'>*</span> <span class='n'>p_overlap</span><span class='p'>)</span>
+        <span class='n'>f</span><span class='p'>,</span> <span class='n'>psd</span> <span class='o'>=</span> <span class='n'>welch</span><span class='p'>(</span>
+            <span class='n'>signal</span><span class='p'>,</span>
+            <span class='n'>sampling_rate</span><span class='p'>,</span>
+            <span class='n'>nperseg</span><span class='o'>=</span><span class='n'>n_per_seg</span><span class='p'>,</span>
+            <span class='n'>noverlap</span><span class='o'>=</span><span class='n'>n_overlap</span><span class='p'>,</span>
+            <span class='n'>scaling</span><span class='o'>=</span><span class='s2'>&quot;density&quot;</span><span class='p'>,</span>
+            <span class='n'>return_onesided</span><span class='o'>=</span><span class='kc'>True</span><span class='p'>,</span>
+            <span class='n'>detrend</span><span class='o'>=</span><span class='kc'>False</span><span class='p'>,</span>
+            <span class='c1'># window=&#39;boxcar&#39;,</span>
+            <span class='n'>window</span><span class='o'>=</span><span class='s2'>&quot;hanning&quot;</span><span class='p'>,</span>
+        <span class='p'>)</span>
+        <span class='n'>n_fft</span> <span class='o'>=</span> <span class='n'>n_per_seg</span>
+        <span class='n'>psd</span> <span class='o'>/=</span> <span class='n'>signal_length</span> <span class='o'>/</span> <span class='n'>n_per_seg</span>  <span class='c1'># normalise?</span>
+    <span class='n'>spec</span> <span class='o'>=</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>sqrt</span><span class='p'>((</span><span class='n'>psd</span> <span class='o'>/</span> <span class='n'>sc</span><span class='p'>))</span>
+
+    <span class='n'>noise</span> <span class='o'>=</span> <span class='p'>[]</span>
+    <span class='n'>runs</span> <span class='o'>=</span> <span class='n'>signal_length</span> <span class='o'>//</span> <span class='n'>n_fft</span>
+    <span class='k'>for</span> <span class='n'>i</span> <span class='ow'>in</span> <span class='nb'>range</span><span class='p'>(</span><span class='n'>runs</span> <span class='o'>+</span> <span class='mi'>1</span><span class='p'>):</span>
+        <span class='n'>numpy_seed</span><span class='p'>(</span><span class='n'>seed</span> <span class='o'>+</span> <span class='n'>i</span><span class='p'>)</span>
+        <span class='n'>noise</span><span class='o'>.</span><span class='n'>extend</span><span class='p'>(</span>
+            <span class='n'>numpy</span><span class='o'>.</span><span class='n'>real</span><span class='p'>(</span>
+                <span class='n'>fft</span><span class='o'>.</span><span class='n'>irfft</span><span class='p'>(</span>
+                    <span class='n'>spec</span>
+                    <span class='o'>*</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>exp</span><span class='p'>(</span>
+                        <span class='mi'>2</span> <span class='o'>*</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>pi</span> <span class='o'>*</span> <span class='mi'>1</span><span class='n'>j</span> <span class='o'>*</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>random</span><span class='o'>.</span><span class='n'>random</span><span class='p'>(</span><span class='n'>spec</span><span class='o'>.</span><span class='n'>shape</span><span class='p'>[</span><span class='o'>-</span><span class='mi'>1</span><span class='p'>])</span>
+                    <span class='p'>),</span>  <span class='c1'># Randomise phase. 0-&gt;360, 2 pi rads</span>
+                    <span class='n'>n_fft</span><span class='p'>,</span>
+                <span class='p'>)</span>
+            <span class='p'>)</span>
+        <span class='p'>)</span>  <span class='c1'># Give each spectral component a random phase, PHI(f(k)) = random number,</span>
+        <span class='c1'># uniformly distributed between 0 and 360 degrees (or equivalently, between 0 and 2Pi radians);</span>
+
+    <span class='n'>noise</span> <span class='o'>=</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>array</span><span class='p'>(</span><span class='n'>noise</span><span class='p'>)[:</span><span class='n'>signal_length</span><span class='p'>]</span>
+
+    <span class='k'>if</span> <span class='n'>keep_signal_amp_envelope</span><span class='p'>:</span>
+        <span class='p'>[</span><span class='n'>bb</span><span class='p'>,</span> <span class='n'>aa</span><span class='p'>]</span> <span class='o'>=</span> <span class='n'>butter</span><span class='p'>(</span><span class='n'>low_pass_order</span><span class='p'>,</span> <span class='n'>low_pass_cutoff</span> <span class='o'>/</span> <span class='p'>(</span><span class='n'>sampling_rate</span> <span class='o'>/</span> <span class='mi'>2</span><span class='p'>))</span>  <span class='c1'># Cutoff Hz, LP filter</span>
+        <span class='n'>noise</span> <span class='o'>*=</span> <span class='n'>filtfilt</span><span class='p'>(</span>
+            <span class='n'>bb</span><span class='p'>,</span>  <span class='c1'># numerator</span>
+            <span class='n'>aa</span><span class='p'>,</span>  <span class='c1'># denominator</span>
+            <span class='n'>hilbert_envelope</span><span class='p'>(</span><span class='n'>signal</span><span class='p'>),</span>  <span class='c1'># envelope of speech signal in time domain</span>
+        <span class='p'>)</span>
+
+    <span class='k'>return</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>expand_dims</span><span class='p'>(</span><span class='n'>noise</span><span class='p'>,</span> <span class='mi'>0</span><span class='p'>)</span>
+
+
+<div class='viewcode-block' id='generate_speech_shaped_noise'><a class='viewcode-back' href='../../../generated/modulation.noise_generation.shaped_noise.generate_speech_shaped_noise.html#modulation.noise_generation.shaped_noise.generate_speech_shaped_noise'>[docs]</a><span class='k'>def</span> <span class='nf'>generate_speech_shaped_noise</span><span class='p'>(</span>
+    <span class='n'>samples</span><span class='p'>:</span> <span class='n'>Iterable</span><span class='p'>[</span><span class='n'>numpy</span><span class='o'>.</span><span class='n'>ndarray</span><span class='p'>],</span>
+    <span class='n'>sampling_rate</span><span class='p'>,</span>
+    <span class='o'>*</span><span class='p'>,</span>
+    <span class='n'>export_path</span><span class='p'>:</span> <span class='n'>Path</span> <span class='o'>=</span> <span class='kc'>None</span><span class='p'>,</span>
+    <span class='n'>long_term_avg</span><span class='o'>=</span><span class='kc'>True</span><span class='p'>,</span>
+    <span class='n'>window_length_sec</span><span class='o'>=</span><span class='mi'>20</span> <span class='o'>/</span> <span class='mi'>1000</span><span class='p'>,</span>
+    <span class='n'>p_overlap</span><span class='o'>=</span><span class='mf'>0.5</span><span class='p'>,</span>
+<span class='p'>)</span> <span class='o'>-&gt;</span> <span class='n'>Iterable</span><span class='p'>:</span>
+    <span class='sd'>&quot;&quot;&quot;</span>
+<span class='sd'>    White (flat-spectrum) noise has more energy at high frequencies, and therefore produces more masking of the higher formants and frication noises than speech-shaped noise, speech shaped noise mask evenly throughout the speech signal spectrum</span>
+<span class='sd'>    &quot;&quot;&quot;</span>
+
+    <span class='n'>samples</span> <span class='o'>=</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>concatenate</span><span class='p'>(</span><span class='n'>samples</span><span class='p'>,</span> <span class='o'>-</span><span class='mi'>1</span><span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+    <span class='n'>noise</span> <span class='o'>=</span> <span class='n'>spectrum_like_noise</span><span class='p'>(</span>
+        <span class='n'>samples</span><span class='p'>,</span>
+        <span class='n'>sampling_rate</span><span class='o'>=</span><span class='n'>sampling_rate</span><span class='p'>,</span>
+        <span class='n'>long_term_avg</span><span class='o'>=</span><span class='n'>long_term_avg</span><span class='p'>,</span>
+        <span class='n'>window_length_sec</span><span class='o'>=</span><span class='n'>window_length_sec</span><span class='p'>,</span>
+        <span class='n'>p_overlap</span><span class='o'>=</span><span class='n'>p_overlap</span><span class='p'>,</span>
+    <span class='p'>)</span>
+    <span class='k'>if</span> <span class='n'>export_path</span><span class='p'>:</span>
+        <span class='n'>torchaudio</span><span class='o'>.</span><span class='n'>save</span><span class='p'>(</span><span class='nb'>str</span><span class='p'>(</span><span class='n'>export_path</span><span class='p'>),</span> <span class='n'>to_tensor</span><span class='p'>(</span><span class='n'>noise</span><span class='p'>),</span> <span class='n'>sampling_rate</span><span class='p'>)</span>
+    <span class='k'>return</span> <span class='n'>noise</span></div>
+
+
+<span class='k'>if</span> <span class='vm'>__name__</span> <span class='o'>==</span> <span class='s2'>&quot;__main__&quot;</span><span class='p'>:</span>
+
+    <span class='k'>def</span> <span class='nf'>reald</span><span class='p'>():</span>
+        <span class='sd'>&quot;&quot;&quot;</span>
+
+<span class='sd'>        &quot;&quot;&quot;</span>
+        <span class='kn'>from</span> <span class='nn'>draugr.visualisation</span> <span class='kn'>import</span> <span class='n'>ltass_plot</span>
+        <span class='kn'>from</span> <span class='nn'>modulation.data.audio.speech.recognition.libri_speech</span> <span class='kn'>import</span> <span class='n'>LibriSpeech</span>
+
+        <span class='n'>libri_speech</span> <span class='o'>=</span> <span class='n'>LibriSpeech</span><span class='p'>(</span><span class='n'>path</span><span class='o'>=</span><span class='n'>Path</span><span class='o'>.</span><span class='n'>home</span><span class='p'>()</span> <span class='o'>/</span> <span class='s2'>&quot;Data&quot;</span> <span class='o'>/</span> <span class='s2'>&quot;Audio&quot;</span> <span class='o'>/</span> <span class='s2'>&quot;Speech&quot;</span> <span class='o'>/</span> <span class='s2'>&quot;LibriSpeech&quot;</span><span class='p'>)</span>
+        <span class='n'>files</span><span class='p'>,</span> <span class='n'>sr</span> <span class='o'>=</span> <span class='nb'>zip</span><span class='p'>(</span><span class='o'>*</span><span class='p'>[(</span><span class='n'>v</span><span class='p'>[</span><span class='mi'>0</span><span class='p'>]</span><span class='o'>.</span><span class='n'>numpy</span><span class='p'>(),</span> <span class='n'>v</span><span class='p'>[</span><span class='mi'>1</span><span class='p'>])</span> <span class='k'>for</span> <span class='n'>_</span><span class='p'>,</span> <span class='n'>v</span> <span class='ow'>in</span> <span class='nb'>zip</span><span class='p'>(</span><span class='nb'>range</span><span class='p'>(</span><span class='mi'>20</span><span class='p'>),</span> <span class='n'>libri_speech</span><span class='p'>)])</span>
+        <span class='k'>assert</span> <span class='nb'>all</span><span class='p'>([</span><span class='n'>sr</span><span class='p'>[</span><span class='mi'>0</span><span class='p'>]</span> <span class='o'>==</span> <span class='n'>s</span> <span class='k'>for</span> <span class='n'>s</span> <span class='ow'>in</span> <span class='n'>sr</span><span class='p'>[</span><span class='mi'>1</span><span class='p'>:]])</span>
+        <span class='n'>sr</span> <span class='o'>=</span> <span class='n'>sr</span><span class='p'>[</span><span class='mi'>0</span><span class='p'>]</span>
+
+        <span class='c1'># from modulation.noise_generation import generate_babble_noise</span>
+        <span class='c1'># files = generate_babble_noise(samples, sampling_rate)</span>
+        <span class='n'>samples_len</span> <span class='o'>=</span> <span class='nb'>len</span><span class='p'>(</span><span class='n'>numpy</span><span class='o'>.</span><span class='n'>concatenate</span><span class='p'>(</span><span class='n'>files</span><span class='p'>,</span> <span class='o'>-</span><span class='mi'>1</span><span class='p'>)[</span><span class='mi'>0</span><span class='p'>])</span>
+
+        <span class='n'>noise_welch</span> <span class='o'>=</span> <span class='n'>generate_speech_shaped_noise</span><span class='p'>(</span>
+            <span class='n'>files</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>long_term_avg</span><span class='o'>=</span><span class='kc'>True</span><span class='p'>,</span> <span class='n'>export_path</span><span class='o'>=</span><span class='n'>Path</span><span class='p'>(</span><span class='s2'>&quot;exclude&quot;</span><span class='p'>)</span> <span class='o'>/</span> <span class='s2'>&quot;ssn_welch.wav&quot;</span>
+        <span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+        <span class='n'>noise_fft</span> <span class='o'>=</span> <span class='n'>generate_speech_shaped_noise</span><span class='p'>(</span>
+            <span class='n'>files</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>long_term_avg</span><span class='o'>=</span><span class='kc'>False</span><span class='p'>,</span> <span class='n'>export_path</span><span class='o'>=</span><span class='n'>Path</span><span class='p'>(</span><span class='s2'>&quot;exclude&quot;</span><span class='p'>)</span> <span class='o'>/</span> <span class='s2'>&quot;ssn_fft.wav&quot;</span>
+        <span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+        <span class='c1'># noise_welch_full = generate_speech_shaped_noise(files, sr, long_term_avg=True, window_length_sec= samples_len/sr,p_overlap=0)[0]</span>
+        <span class='n'>files</span> <span class='o'>=</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>concatenate</span><span class='p'>(</span><span class='n'>files</span><span class='p'>,</span> <span class='o'>-</span><span class='mi'>1</span><span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+        <span class='n'>torchaudio</span><span class='o'>.</span><span class='n'>save</span><span class='p'>(</span><span class='nb'>str</span><span class='p'>(</span><span class='n'>Path</span><span class='p'>(</span><span class='s2'>&quot;exclude&quot;</span><span class='p'>)</span> <span class='o'>/</span> <span class='s2'>&quot;ssn_signal.wav&quot;</span><span class='p'>),</span> <span class='n'>to_tensor</span><span class='p'>(</span><span class='n'>files</span><span class='p'>),</span> <span class='n'>sr</span><span class='p'>)</span>
+
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>files</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;signal&quot;</span><span class='p'>)</span>
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>noise_welch</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;noise_welch&quot;</span><span class='p'>)</span>
+        <span class='c1'># ltass_plot(noise_welch_full, sr, label=&#39;noise_welch_full&#39;)</span>
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>noise_fft</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;noise_fft&quot;</span><span class='p'>)</span>
+
+        <span class='n'>pyplot</span><span class='o'>.</span><span class='n'>legend</span><span class='p'>()</span>
+        <span class='n'>pyplot</span><span class='o'>.</span><span class='n'>show</span><span class='p'>()</span>
+
+    <span class='k'>def</span> <span class='nf'>synth</span><span class='p'>():</span>
+        <span class='sd'>&quot;&quot;&quot;</span>
+
+<span class='sd'>        &quot;&quot;&quot;</span>
+        <span class='kn'>from</span> <span class='nn'>draugr.visualisation</span> <span class='kn'>import</span> <span class='n'>ltass_plot</span>
+        <span class='kn'>from</span> <span class='nn'>modulation.data.audio.speech.recognition.libri_speech</span> <span class='kn'>import</span> <span class='n'>LibriSpeech</span>
+
+        <span class='n'>signal_length_sec</span> <span class='o'>=</span> <span class='mi'>11</span>
+        <span class='n'>t</span> <span class='o'>=</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>linspace</span><span class='p'>(</span><span class='mi'>0</span><span class='p'>,</span> <span class='n'>signal_length_sec</span><span class='p'>,</span> <span class='nb'>int</span><span class='p'>(</span><span class='mi'>1000</span> <span class='o'>*</span> <span class='n'>signal_length_sec</span><span class='p'>),</span> <span class='n'>endpoint</span><span class='o'>=</span><span class='kc'>False</span><span class='p'>)</span>
+        <span class='n'>signal</span> <span class='o'>=</span> <span class='p'>(</span>
+            <span class='n'>numpy</span><span class='o'>.</span><span class='n'>sin</span><span class='p'>(</span><span class='mi'>50</span> <span class='o'>*</span> <span class='mi'>2</span> <span class='o'>*</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>pi</span> <span class='o'>*</span> <span class='n'>t</span><span class='p'>)</span> <span class='o'>+</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>sin</span><span class='p'>(</span><span class='mi'>200</span> <span class='o'>*</span> <span class='mi'>2</span> <span class='o'>*</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>pi</span> <span class='o'>*</span> <span class='n'>t</span><span class='p'>)</span> <span class='o'>+</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>sin</span><span class='p'>(</span><span class='mi'>400</span> <span class='o'>*</span> <span class='mi'>2</span> <span class='o'>*</span> <span class='n'>numpy</span><span
+                class='o'>.</span><span class='n'>pi</span> <span class='o'>*</span> <span class='n'>t</span><span class='p'>)</span>
+        <span class='p'>)</span>
+        <span class='n'>sr</span> <span class='o'>=</span> <span class='nb'>len</span><span class='p'>(</span><span class='n'>t</span><span class='p'>)</span> <span class='o'>/</span> <span class='n'>signal_length_sec</span>
+
+        <span class='n'>noise_welch</span> <span class='o'>=</span> <span class='n'>spectrum_like_noise</span><span class='p'>(</span><span class='n'>signal</span><span class='p'>,</span> <span class='n'>sampling_rate</span><span class='o'>=</span><span class='n'>sr</span><span class='p'>,</span> <span class='n'>long_term_avg</span><span class='o'>=</span><span class='kc'>True</span><span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+        <span class='n'>noise_welch_full</span> <span class='o'>=</span> <span class='n'>spectrum_like_noise</span><span class='p'>(</span>
+            <span class='n'>signal</span><span class='p'>,</span>
+            <span class='n'>sampling_rate</span><span class='o'>=</span><span class='n'>sr</span><span class='p'>,</span>
+            <span class='n'>long_term_avg</span><span class='o'>=</span><span class='kc'>True</span><span class='p'>,</span>
+            <span class='n'>window_length_sec</span><span class='o'>=</span><span class='n'>signal_length_sec</span><span class='p'>,</span>
+            <span class='n'>p_overlap</span><span class='o'>=</span><span class='mi'>0</span><span class='p'>,</span>
+        <span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+        <span class='n'>noise_fft</span> <span class='o'>=</span> <span class='n'>spectrum_like_noise</span><span class='p'>(</span><span class='n'>signal</span><span class='p'>,</span> <span class='n'>sampling_rate</span><span class='o'>=</span><span class='n'>sr</span><span class='p'>,</span> <span class='n'>long_term_avg</span><span class='o'>=</span><span class='kc'>False</span><span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>signal</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;signal&quot;</span><span class='p'>)</span>
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>noise_welch</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;noise_welch&quot;</span><span class='p'>)</span>
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>noise_welch_full</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;noise_welch_full&quot;</span><span class='p'>)</span>
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>noise_fft</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;noise_fft&quot;</span><span class='p'>)</span>
+
+        <span class='n'>pyplot</span><span class='o'>.</span><span class='n'>legend</span><span class='p'>()</span>
+        <span class='n'>pyplot</span><span class='o'>.</span><span class='n'>show</span><span class='p'>()</span>
+
+    <span class='k'>def</span> <span class='nf'>distinct_real</span><span class='p'>():</span>
+        <span class='sd'>&quot;&quot;&quot;</span>
+
+<span class='sd'>        &quot;&quot;&quot;</span>
+        <span class='kn'>from</span> <span class='nn'>draugr.visualisation</span> <span class='kn'>import</span> <span class='n'>ltass_plot</span>
+        <span class='kn'>from</span> <span class='nn'>modulation.data.audio.speech.recognition.libri_speech</span> <span class='kn'>import</span> <span class='n'>LibriSpeech</span>
+
+        <span class='n'>samples</span> <span class='o'>=</span> <span class='mi'>6</span>
+        <span class='n'>d_male</span> <span class='o'>=</span> <span class='nb'>iter</span><span class='p'>(</span>
+            <span class='n'>LibriSpeech</span><span class='p'>(</span>
+                <span class='n'>path</span><span class='o'>=</span><span class='n'>Path</span><span class='o'>.</span><span class='n'>home</span><span class='p'>()</span> <span class='o'>/</span> <span class='s2'>&quot;Data&quot;</span> <span class='o'>/</span> <span class='s2'>&quot;Audio&quot;</span> <span class='o'>/</span> <span class='s2'>&quot;Speech&quot;</span> <span class='o'>/</span> <span class='s2'>&quot;LibriSpeech&quot;</span><span class='p'>,</span>
+                <span class='n'>custom_subset</span><span class='o'>=</span><span class='n'>LibriSpeech</span><span class='o'>.</span><span class='n'>CustomSubsets</span><span class='o'>.</span><span class='n'>male</span><span class='p'>,</span>
+            <span class='p'>)</span>
+        <span class='p'>)</span>
+        <span class='n'>d_female</span> <span class='o'>=</span> <span class='nb'>iter</span><span class='p'>(</span>
+            <span class='n'>LibriSpeech</span><span class='p'>(</span>
+                <span class='n'>path</span><span class='o'>=</span><span class='n'>Path</span><span class='o'>.</span><span class='n'>home</span><span class='p'>()</span> <span class='o'>/</span> <span class='s2'>&quot;Data&quot;</span> <span class='o'>/</span> <span class='s2'>&quot;Audio&quot;</span> <span class='o'>/</span> <span class='s2'>&quot;Speech&quot;</span> <span class='o'>/</span> <span class='s2'>&quot;LibriSpeech&quot;</span><span class='p'>,</span>
+                <span class='n'>custom_subset</span><span class='o'>=</span><span class='n'>LibriSpeech</span><span class='o'>.</span><span class='n'>CustomSubsets</span><span class='o'>.</span><span class='n'>female</span><span class='p'>,</span>
+            <span class='p'>)</span>
+        <span class='p'>)</span>
+        <span class='n'>male_unique</span> <span class='o'>=</span> <span class='p'>{}</span>
+        <span class='k'>while</span> <span class='nb'>len</span><span class='p'>(</span><span class='n'>male_unique</span><span class='p'>)</span> <span class='o'>&lt;</span> <span class='n'>samples</span> <span class='o'>//</span> <span class='mi'>2</span><span class='p'>:</span>
+            <span class='n'>s</span> <span class='o'>=</span> <span class='nb'>next</span><span class='p'>(</span><span class='n'>d_male</span><span class='p'>)</span>
+            <span class='n'>speaker_id</span> <span class='o'>=</span> <span class='n'>s</span><span class='p'>[</span><span class='o'>-</span><span class='mi'>3</span><span class='p'>]</span>
+            <span class='k'>if</span> <span class='n'>speaker_id</span> <span class='ow'>not</span> <span class='ow'>in</span> <span class='n'>male_unique</span><span class='p'>:</span>
+                <span class='n'>male_unique</span><span class='p'>[</span><span class='n'>speaker_id</span><span class='p'>]</span> <span class='o'>=</span> <span class='n'>s</span>
+
+        <span class='n'>female_unique</span> <span class='o'>=</span> <span class='p'>{}</span>
+        <span class='k'>while</span> <span class='nb'>len</span><span class='p'>(</span><span class='n'>female_unique</span><span class='p'>)</span> <span class='o'>&lt;</span> <span class='n'>samples</span> <span class='o'>//</span> <span class='mi'>2</span><span class='p'>:</span>
+            <span class='n'>s</span> <span class='o'>=</span> <span class='nb'>next</span><span class='p'>(</span><span class='n'>d_female</span><span class='p'>)</span>
+            <span class='n'>speaker_id</span> <span class='o'>=</span> <span class='n'>s</span><span class='p'>[</span><span class='o'>-</span><span class='mi'>3</span><span class='p'>]</span>
+            <span class='k'>if</span> <span class='n'>speaker_id</span> <span class='ow'>not</span> <span class='ow'>in</span> <span class='n'>female_unique</span><span class='p'>:</span>
+                <span class='n'>female_unique</span><span class='p'>[</span><span class='n'>speaker_id</span><span class='p'>]</span> <span class='o'>=</span> <span class='n'>s</span>
+
+        <span class='n'>unique</span> <span class='o'>=</span> <span class='p'>(</span><span class='o'>*</span><span class='n'>male_unique</span><span class='o'>.</span><span class='n'>values</span><span class='p'>(),</span> <span class='o'>*</span><span class='n'>female_unique</span><span class='o'>.</span><span class='n'>values</span><span class='p'>())</span>
+
+        <span class='n'>files</span><span class='p'>,</span> <span class='n'>sr</span> <span class='o'>=</span> <span class='nb'>zip</span><span class='p'>(</span><span class='o'>*</span><span class='p'>[(</span><span class='n'>v</span><span class='p'>[</span><span class='mi'>0</span><span class='p'>]</span><span class='o'>.</span><span class='n'>numpy</span><span class='p'>(),</span> <span class='n'>v</span><span class='p'>[</span><span class='mi'>1</span><span class='p'>])</span> <span class='k'>for</span> <span class='n'>_</span><span class='p'>,</span> <span class='n'>v</span> <span class='ow'>in</span> <span class='nb'>zip</span><span class='p'>(</span><span class='nb'>range</span><span class='p'>(</span><span class='n'>samples</span><span class='p'>),</span> <span class='n'>unique</span><span class='p'>)])</span>
+        <span class='k'>assert</span> <span class='nb'>all</span><span class='p'>([</span><span class='n'>sr</span><span class='p'>[</span><span class='mi'>0</span><span class='p'>]</span> <span class='o'>==</span> <span class='n'>s</span> <span class='k'>for</span> <span class='n'>s</span> <span class='ow'>in</span> <span class='n'>sr</span><span class='p'>[</span><span class='mi'>1</span><span class='p'>:]])</span>
+        <span class='n'>sr</span> <span class='o'>=</span> <span class='n'>sr</span><span class='p'>[</span><span class='mi'>0</span><span class='p'>]</span>
+
+        <span class='n'>noise_welch</span> <span class='o'>=</span> <span class='n'>generate_speech_shaped_noise</span><span class='p'>(</span>
+            <span class='n'>files</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>long_term_avg</span><span class='o'>=</span><span class='kc'>True</span><span class='p'>,</span> <span class='n'>export_path</span><span class='o'>=</span><span class='n'>Path</span><span class='p'>(</span><span class='s2'>&quot;exclude&quot;</span><span class='p'>)</span> <span class='o'>/</span> <span class='s2'>&quot;ssn_welch.wav&quot;</span>
+        <span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+        <span class='n'>noise_fft</span> <span class='o'>=</span> <span class='n'>generate_speech_shaped_noise</span><span class='p'>(</span>
+            <span class='n'>files</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>long_term_avg</span><span class='o'>=</span><span class='kc'>False</span><span class='p'>,</span> <span class='n'>export_path</span><span class='o'>=</span><span class='n'>Path</span><span class='p'>(</span><span class='s2'>&quot;exclude&quot;</span><span class='p'>)</span> <span class='o'>/</span> <span class='s2'>&quot;ssn_fft.wav&quot;</span>
+        <span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+        <span class='n'>files</span> <span class='o'>=</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>concatenate</span><span class='p'>(</span><span class='n'>files</span><span class='p'>,</span> <span class='o'>-</span><span class='mi'>1</span><span class='p'>)[</span><span class='mi'>0</span><span class='p'>]</span>
+        <span class='n'>torchaudio</span><span class='o'>.</span><span class='n'>save</span><span class='p'>(</span><span class='nb'>str</span><span class='p'>(</span><span class='n'>Path</span><span class='p'>(</span><span class='s2'>&quot;exclude&quot;</span><span class='p'>)</span> <span class='o'>/</span> <span class='s2'>&quot;ssn_signal.wav&quot;</span><span class='p'>),</span> <span class='n'>to_tensor</span><span class='p'>(</span><span class='n'>files</span><span class='p'>),</span> <span class='n'>sr</span><span class='p'>)</span>
+
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>files</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;signal&quot;</span><span class='p'>)</span>
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>noise_welch</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;noise_welch&quot;</span><span class='p'>)</span>
+        <span class='n'>ltass_plot</span><span class='p'>(</span><span class='n'>noise_fft</span><span class='p'>,</span> <span class='n'>sr</span><span class='p'>,</span> <span class='n'>label</span><span class='o'>=</span><span class='s2'>&quot;noise_fft&quot;</span><span class='p'>)</span>
+
+        <span class='n'>pyplot</span><span class='o'>.</span><span class='n'>legend</span><span class='p'>()</span>
+        <span class='n'>pyplot</span><span class='o'>.</span><span class='n'>show</span><span class='p'>()</span>
+
+    <span class='c1'># reald()</span>
+    <span class='c1'># synth()</span>
+    <span class='n'>distinct_real</span><span class='p'>()</span>
+</pre>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+      <div class='sphinxsidebar' role='navigation' aria-label='main navigation'>
+        <div class='sphinxsidebarwrapper'>
+          <h1 class='logo'><a href='../../../index.html'>modulation</a></h1>
+
+
+          <h3>Navigation</h3>
+          <ul>
+            <li class='toctree-l1'><a class='reference internal' href='../../../generated/modulation.html'>modulation</a></li>
+          </ul>
+          <p class='caption' role='heading'><span class='caption-text'>Notes</span></p>
+          <ul>
+            <li class='toctree-l1'><a class='reference internal' href='../../../getting_started.html'>Getting Started</a></li>
+          </ul>
+
+          <div class='relations'>
+            <h3>Related Topics</h3>
+            <ul>
+              <li><a href='../../../index.html'>Documentation overview</a>
+                <ul>
+                  <li><a href='../../index.html'>Module code</a>
+                    <ul>
+                      <li><a href='../../modulation.html'>modulation</a>
+                        <ul>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div id='searchbox' style='display: none' role='search'>
+            <h3 id='searchlabel'>Quick search</h3>
+            <div class='searchformwrapper'>
+              <form class='search' action='../../../search.html' method='get'>
+                <input type='text' name='q' aria-labelledby='searchlabel' autocomplete='off' autocorrect='off' autocapitalize='off' spellcheck='false'/>
+                <input type='submit' value='Go'/>
+              </form>
+            </div>
+          </div>
+          <script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+        </div>
+      </div>
+      <div class='clearer'></div>
+    </div>
+    <div class='footer'>
+      &copy;.
+
+      |
+      Powered by <a href='http://sphinx-doc.org/'>Sphinx 5.0.2</a>
+      &amp; <a href='https://github.com/bitprophet/alabaster'>Alabaster 0.7.12</a>
+
+    </div>
+
+
+  </body>
+</html>

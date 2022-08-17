@@ -1,0 +1,15 @@
+#devpack>=0.0.4
+neodroid
+numpy
+scipy
+scikit-image
+tqdm
+Pillow
+matplotlib
+pip
+h5py
+torch
+torchaudio
+librosa
+
+# pyaudio # conda
