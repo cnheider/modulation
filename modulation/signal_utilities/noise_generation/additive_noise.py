@@ -11,12 +11,14 @@ from pathlib import Path
 from typing import Any
 
 import numpy
-from apppath import ensure_existence
+from draugr.visualisation import progress_bar
+from warg import ensure_existence
 from draugr.numpy_utilities import root_mean_square
-from draugr.tqdm_utilities import progress_bar
-from modulation.audio_utilities.speech.splitting import mask_split_concat
+
 from scipy import signal
 from scipy.io import wavfile
+
+from modulation.signal_utilities import mask_split_non_zero_concat
 
 
 def sample_noise(
@@ -60,7 +62,7 @@ def compute_additive_noise_samples(
     category,
     out_dir,
     noise_file,
-    snrs=list((i * 5 for i in range(5))),
+    snrs=None,
     verbose: bool = False,
 ) -> None:
     """
@@ -80,6 +82,9 @@ def compute_additive_noise_samples(
     :param verbose:
     :type verbose:
     """
+    if snrs is None:
+        snrs = list((i * 5 for i in range(5)))
+
     sr_noise, noise = wavfile.read(str(noise_file))
     sr_signal, signal = wavfile.read(str(signal_file))
 
@@ -94,7 +99,7 @@ def compute_additive_noise_samples(
     )
 
     noise_scaled = noise_part * (
-        root_mean_square(mask_split_concat(voice_activity_mask, signal)[0])
+        root_mean_square(mask_split_non_zero_concat(voice_activity_mask, signal)[0])
         / root_mean_square(noise_part)
     )  # scaled by ratio of speech to noise level
 

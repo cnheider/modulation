@@ -20,9 +20,10 @@ from numpy import fft
 from scipy.signal import butter, filtfilt, welch
 from warg import next_pow_2
 
-from modulation.audio_utilities.funcs import hilbert_envelope
 
 __all__ = ["generate_speech_shaped_noise"]
+
+from modulation.signal_utilities.audio_utilities.filtering import hilbert_envelope
 
 
 def spectrum_like_noise(

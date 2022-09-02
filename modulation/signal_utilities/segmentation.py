@@ -12,8 +12,10 @@ __all__ = ["runs_of_non_zero"]
 import itertools
 from typing import Sequence
 
+from warg import Number
 
-def non_zero(x) -> bool:
+
+def non_zero(x: Number) -> bool:
     return x != 0
 
 

@@ -13,7 +13,7 @@ from scipy.signal import hilbert, lfilter
 from warg import next_pow_2
 
 
-def mel_scale(x):
+def mel_scale(x: numpy.ndarray) -> numpy.ndarray:
     """
 
     :param x:
@@ -24,7 +24,7 @@ def mel_scale(x):
     return 2595.0 * numpy.log10(1.0 + x / 700.0)
 
 
-def in_mel_scale(x):
+def in_mel_scale(x: numpy.ndarray) -> numpy.ndarray:
     """
 
     :param x:
@@ -35,7 +35,7 @@ def in_mel_scale(x):
     return 700 * (10 ** (x / 2595.0) - 1)
 
 
-def pre_emphasise(x, coeff: float = 0.97):
+def pre_emphasise(x: numpy.ndarray, coeff: float = 0.97) -> numpy.ndarray:
     """
 
     :param x:
@@ -48,7 +48,7 @@ def pre_emphasise(x, coeff: float = 0.97):
     return lfilter([1, -coeff], [1], x)
 
 
-def de_emphasise(x, coeff: float = 0.97):
+def de_emphasise(x: numpy.ndarray, coeff: float = 0.97) -> numpy.ndarray:
     """
 
     :param x:
@@ -61,7 +61,7 @@ def de_emphasise(x, coeff: float = 0.97):
     return lfilter([1], [1, -coeff], x)
 
 
-def pre_emphasise_torch(signal, coeff: float = 0.97):
+def pre_emphasise_torch(signal: numpy.ndarray, coeff: float = 0.97) -> numpy.ndarray:
     """
     Pre-emphasis on the input signal
     :param signal: (time,)
@@ -71,7 +71,7 @@ def pre_emphasise_torch(signal, coeff: float = 0.97):
     return torch.cat((signal[0:1], signal[1:] - coeff * signal[:-1]))
 
 
-def fft_frequencies(sr=16000, n_fft=512):
+def fft_frequencies(sr: int = 16000, n_fft: int = 512) -> numpy.ndarray:
     """
 
     :param sr:

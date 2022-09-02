@@ -10,9 +10,11 @@ __doc__ = r"""
 from typing import List, Tuple
 
 import torch
+from draugr.writers import Writer
 from torch import nn
 
-import modulation.audio_utilities.torch_transforms
+import modulation
+from modulation.torch_utilities import torch_transforms
 
 
 class UNetConvBlock(nn.Module):
@@ -104,8 +106,8 @@ class UNet(nn.Module):
         self,
         conv_channels_list: List[int] = (64, 128, 256, 512, 1024),
         kernel_size: int = 3,
-        spec_transform: modulation.audio_utilities.torch_transforms.Spectrogram = modulation.audio_utilities.torch_transforms.Spectrogram,
-        inv_spec_transform: modulation.audio_utilities.torch_transforms.InverseSpectrogram = modulation.audio_utilities.torch_transforms.InverseSpectrogram,
+        spec_transform: torch_transforms.Spectrogram = torch_transforms.Spectrogram,
+        inv_spec_transform: torch_transforms.InverseSpectrogram = torch_transforms.InverseSpectrogram,
         optimizer_lr: float = 0.001,
     ) -> None:
         super().__init__()
@@ -235,7 +237,7 @@ class UNet(nn.Module):
         self.log("train_loss", loss)
         return loss
 
-    def validation_step(self, batch, batch_idx, metric_writer):
+    def validation_step(self, batch, batch_idx, metric_writer: Writer):
         """
 
         :param batch:
@@ -291,7 +293,7 @@ class UNet(nn.Module):
     #     inf_audio = [wandb.Audio(wav.detach().cpu(), sample_rate=22050) for wav in inf_waveform]
     #     self.logger.experiment.log({"Inferenced audio": inf_audio}, commit=False)
 
-    def configure_optimizers(self):
+    def configure_optimizers(self) -> dict:
         """
 
         :return:
