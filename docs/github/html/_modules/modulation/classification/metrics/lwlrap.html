@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>modulation.classification.metrics.lwlrap &#8212; modulation 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="canonical" href="Aivclab.github.io/modulation/_modules/modulation/classification/metrics/lwlrap.html" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for modulation.classification.metrics.lwlrap</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Christian Heider Nielsen&quot;</span>
+<span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">           Created on 03-12-2020</span>
+<span class="s2">           &quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">sklearn</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;one_sample_positive_class_precisions&#39;</span><span class="p">,</span><span class="s1">&#39;lwlrap_accumulator&#39;</span><span class="p">,</span><span class="s1">&#39;calculate_per_class_lwlrap&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="one_sample_positive_class_precisions"><a class="viewcode-back" href="../../../../generated/modulation.classification.metrics.lwlrap.one_sample_positive_class_precisions.html#modulation.classification.metrics.lwlrap.one_sample_positive_class_precisions">[docs]</a><span class="k">def</span> <span class="nf">one_sample_positive_class_precisions</span><span class="p">(</span>
+    <span class="n">scores</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">truths</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Reference implementation of l$\omega$lrap both natively and using sklearn.metrics.</span>
+
+<span class="sd">      Calculate precisions for each true class for a single sample.</span>
+
+<span class="sd">      Args:</span>
+<span class="sd">        scores: numpy.array of (num_classes,) giving the individual classifier scores.</span>
+<span class="sd">        truths: numpy.array of (num_classes,) bools indicating which classes are true.</span>
+
+<span class="sd">      Returns:</span>
+<span class="sd">        pos_class_indices: numpy.array of indices of the true classes for this sample.</span>
+<span class="sd">        pos_class_precisions: numpy.array of precisions corresponding to each of those</span>
+<span class="sd">          classes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pos_class_indices</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">truths</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">pos_class_indices</span>
+    <span class="p">):</span>  <span class="c1"># Only calculate precisions if there are some true classes.</span>
+        <span class="k">return</span> <span class="n">pos_class_indices</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">retrieved_classes</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">scores</span><span class="p">)[</span>
+        <span class="p">::</span><span class="o">-</span><span class="mi">1</span>
+    <span class="p">]</span>  <span class="c1"># Retrieval list of classes for this sample.</span>
+
+    <span class="n">num_classes</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">class_rankings</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">num_classes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int</span>
+    <span class="p">)</span>  <span class="c1"># class_rankings[top_scoring_class_index] == 0 etc.</span>
+    <span class="n">class_rankings</span><span class="p">[</span><span class="n">retrieved_classes</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_classes</span><span class="p">)</span>
+
+    <span class="n">retrieved_class_true</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">num_classes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">bool</span>
+    <span class="p">)</span>  <span class="c1"># Which of these is a true label?</span>
+    <span class="n">retrieved_class_true</span><span class="p">[</span><span class="n">class_rankings</span><span class="p">[</span><span class="n">pos_class_indices</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">retrieved_cumulative_hits</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span>
+        <span class="n">retrieved_class_true</span>
+    <span class="p">)</span>  <span class="c1"># Num hits for every truncated retrieval list.</span>
+    <span class="n">precision_at_hits</span> <span class="o">=</span> <span class="n">retrieved_cumulative_hits</span><span class="p">[</span>
+        <span class="c1"># Precision of retrieval list truncated at each hit, in order of pos_labels.</span>
+        <span class="n">class_rankings</span><span class="p">[</span><span class="n">pos_class_indices</span><span class="p">]</span>
+    <span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">class_rankings</span><span class="p">[</span><span class="n">pos_class_indices</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">float</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">pos_class_indices</span><span class="p">,</span> <span class="n">precision_at_hits</span></div>
+
+
+<span class="k">def</span> <span class="nf">calculate_overall_lwlrap_sklearn</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the overall lwlrap using sklearn.metrics.lrap.&quot;&quot;&quot;</span>
+    <span class="c1"># sklearn doesn&#39;t correctly apply weighting to samples with no labels, so just skip them.</span>
+    <span class="n">sample_weight</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">truth</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">nonzero_weight_sample_indices</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">sample_weight</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">overall_lwlrap</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">label_ranking_average_precision_score</span><span class="p">(</span>
+        <span class="n">truth</span><span class="p">[</span><span class="n">nonzero_weight_sample_indices</span><span class="p">,</span> <span class="p">:]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">scores</span><span class="p">[</span><span class="n">nonzero_weight_sample_indices</span><span class="p">,</span> <span class="p">:],</span>
+        <span class="n">sample_weight</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">[</span><span class="n">nonzero_weight_sample_indices</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">overall_lwlrap</span>
+
+
+<div class="viewcode-block" id="lwlrap_accumulator"><a class="viewcode-back" href="../../../../generated/modulation.classification.metrics.lwlrap.lwlrap_accumulator.html#modulation.classification.metrics.lwlrap.lwlrap_accumulator">[docs]</a><span class="k">class</span> <span class="nc">lwlrap_accumulator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Accumulate batches of test samples into per-class and overall lwlrap.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="lwlrap_accumulator.__init__"><a class="viewcode-back" href="../../../../generated/modulation.classification.metrics.lwlrap.lwlrap_accumulator.html#modulation.classification.metrics.lwlrap.lwlrap_accumulator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_num_samples</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="lwlrap_accumulator.accumulate_samples"><a class="viewcode-back" href="../../../../generated/modulation.classification.metrics.lwlrap.lwlrap_accumulator.html#modulation.classification.metrics.lwlrap.lwlrap_accumulator.accumulate_samples">[docs]</a>    <span class="k">def</span> <span class="nf">accumulate_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_truth</span><span class="p">,</span> <span class="n">batch_scores</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cumulate a new batch of samples into the metric.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">          truth: numpy.array of (num_samples, num_classes) giving boolean</span>
+<span class="sd">            ground-truth of presence of that class in that sample for this batch.</span>
+<span class="sd">          scores: numpy.array of (num_samples, num_classes) giving the</span>
+<span class="sd">            classifier-under-test&#39;s real-valued score for each class for each</span>
+<span class="sd">            sample.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">batch_scores</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">batch_truth</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">num_samples</span><span class="p">,</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="n">batch_truth</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span> <span class="o">=</span> <span class="n">num_classes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_per_class_cumulative_precision</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_per_class_cumulative_count</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">int</span>
+            <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">num_classes</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span>
+        <span class="k">for</span> <span class="n">truth</span><span class="p">,</span> <span class="n">scores</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">batch_truth</span><span class="p">,</span> <span class="n">batch_scores</span><span class="p">):</span>
+            <span class="n">pos_class_indices</span><span class="p">,</span> <span class="n">precision_at_hits</span> <span class="o">=</span> <span class="n">one_sample_positive_class_precisions</span><span class="p">(</span>
+                <span class="n">scores</span><span class="p">,</span> <span class="n">truth</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_per_class_cumulative_precision</span><span class="p">[</span><span class="n">pos_class_indices</span><span class="p">]</span> <span class="o">+=</span> <span class="n">precision_at_hits</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_per_class_cumulative_count</span><span class="p">[</span><span class="n">pos_class_indices</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_num_samples</span> <span class="o">+=</span> <span class="n">num_samples</span></div>
+
+<div class="viewcode-block" id="lwlrap_accumulator.per_class_lwlrap"><a class="viewcode-back" href="../../../../generated/modulation.classification.metrics.lwlrap.lwlrap_accumulator.html#modulation.classification.metrics.lwlrap.lwlrap_accumulator.per_class_lwlrap">[docs]</a>    <span class="k">def</span> <span class="nf">per_class_lwlrap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a vector of the per-class lwlraps for the accumulated samples.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_per_class_cumulative_precision</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span>
+            <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_per_class_cumulative_count</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="lwlrap_accumulator.per_class_weight"><a class="viewcode-back" href="../../../../generated/modulation.classification.metrics.lwlrap.lwlrap_accumulator.html#modulation.classification.metrics.lwlrap.lwlrap_accumulator.per_class_weight">[docs]</a>    <span class="k">def</span> <span class="nf">per_class_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a normalized weight vector for the contributions of each class.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_per_class_cumulative_count</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_per_class_cumulative_count</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="lwlrap_accumulator.overall_lwlrap"><a class="viewcode-back" href="../../../../generated/modulation.classification.metrics.lwlrap.lwlrap_accumulator.html#modulation.classification.metrics.lwlrap.lwlrap_accumulator.overall_lwlrap">[docs]</a>    <span class="k">def</span> <span class="nf">overall_lwlrap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the scalar overall lwlrap for cumulated samples.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">per_class_lwlrap</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">per_class_weight</span><span class="p">())</span></div></div>
+
+
+
+
+<div class="viewcode-block" id="calculate_per_class_lwlrap"><a class="viewcode-back" href="../../../../generated/modulation.classification.metrics.lwlrap.calculate_per_class_lwlrap.html#modulation.classification.metrics.lwlrap.calculate_per_class_lwlrap">[docs]</a><span class="k">def</span> <span class="nf">calculate_per_class_lwlrap</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span> <span class="n">scores</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate label-weighted label-ranking average precision.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">      truth: numpy.array of (num_samples, num_classes) giving boolean ground-truth</span>
+<span class="sd">        of presence of that class in that sample.</span>
+<span class="sd">      scores: numpy.array of (num_samples, num_classes) giving the classifier-under-</span>
+<span class="sd">        test&#39;s real-valued score for each class for each sample.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      per_class_lwlrap: numpy.array of (num_classes,) giving the lwlrap for each</span>
+<span class="sd">        class.</span>
+<span class="sd">      weight_per_class: numpy.array of (num_classes,) giving the prior of each</span>
+<span class="sd">        class within the truth labels.  Then the overall unbalanced lwlrap is</span>
+<span class="sd">        simply numpy.sum(per_class_lwlrap * weight_per_class)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">truth</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">scores</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">num_samples</span><span class="p">,</span> <span class="n">num_classes</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">shape</span>
+    <span class="c1"># Space to store a distinct precision value for each class on each sample.</span>
+    <span class="c1"># Only the classes that are true for each sample will be filled in.</span>
+    <span class="n">precisions_for_samples_by_classes</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">sample_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_samples</span><span class="p">):</span>
+        <span class="n">pos_class_indices</span><span class="p">,</span> <span class="n">precision_at_hits</span> <span class="o">=</span> <span class="n">one_sample_positive_class_precisions</span><span class="p">(</span>
+            <span class="n">scores</span><span class="p">[</span><span class="n">sample_num</span><span class="p">,</span> <span class="p">:],</span> <span class="n">truth</span><span class="p">[</span><span class="n">sample_num</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="p">)</span>
+        <span class="n">precisions_for_samples_by_classes</span><span class="p">[</span>
+            <span class="n">sample_num</span><span class="p">,</span> <span class="n">pos_class_indices</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="n">precision_at_hits</span>
+    <span class="n">labels_per_class</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">truth</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">weight_per_class</span> <span class="o">=</span> <span class="n">labels_per_class</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">labels_per_class</span><span class="p">))</span>
+    <span class="c1"># Form average of each column, i.e. all the precisions assigned to labels in</span>
+    <span class="c1"># a particular class.</span>
+    <span class="n">per_class_lwlrap</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+        <span class="n">precisions_for_samples_by_classes</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">)</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">labels_per_class</span><span class="p">)</span>
+    <span class="c1"># overall_lwlrap = simple average of all the actual per-class, per-sample precisions</span>
+    <span class="c1">#                = numpy.sum(precisions_for_samples_by_classes) / numpy.sum(precisions_for_samples_by_classes &gt; 0)</span>
+    <span class="c1">#           also = weighted mean of per-class lwlraps, weighted by class label prior across samples</span>
+    <span class="c1">#                = numpy.sum(per_class_lwlrap * weight_per_class)</span>
+    <span class="k">return</span> <span class="n">per_class_lwlrap</span><span class="p">,</span> <span class="n">weight_per_class</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">ijsaduh</span><span class="p">():</span>
+        <span class="c1"># Random test data.</span>
+        <span class="n">num_samples</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="n">num_labels</span> <span class="o">=</span> <span class="mi">20</span>
+
+        <span class="n">truth</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">num_labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+        <span class="c1"># Ensure at least some samples with no truth labels.</span>
+        <span class="n">truth</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="n">num_labels</span><span class="p">)</span>
+
+        <span class="n">per_class_lwlrap</span><span class="p">,</span> <span class="n">weight_per_class</span> <span class="o">=</span> <span class="n">calculate_per_class_lwlrap</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;lwlrap from per-class values=&quot;</span><span class="p">,</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">per_class_lwlrap</span> <span class="o">*</span> <span class="n">weight_per_class</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;lwlrap from sklearn.metrics =&quot;</span><span class="p">,</span>
+            <span class="n">calculate_overall_lwlrap_sklearn</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span> <span class="n">scores</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Test of accumulator version.</span>
+        <span class="n">accumulator</span> <span class="o">=</span> <span class="n">lwlrap_accumulator</span><span class="p">()</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">12</span>
+        <span class="k">for</span> <span class="n">base_sample</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">scores</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">batch_size</span><span class="p">):</span>
+            <span class="n">accumulator</span><span class="o">.</span><span class="n">accumulate_samples</span><span class="p">(</span>
+                <span class="n">truth</span><span class="p">[</span><span class="n">base_sample</span> <span class="p">:</span> <span class="n">base_sample</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">,</span> <span class="p">:],</span>
+                <span class="n">scores</span><span class="p">[</span><span class="n">base_sample</span> <span class="p">:</span> <span class="n">base_sample</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cumulative_lwlrap=&quot;</span><span class="p">,</span> <span class="n">accumulator</span><span class="o">.</span><span class="n">overall_lwlrap</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total_num_samples=&quot;</span><span class="p">,</span> <span class="n">accumulator</span><span class="o">.</span><span class="n">total_num_samples</span><span class="p">)</span>
+
+    <span class="n">ijsaduh</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../../../index.html">
+              <img class="logo" src="../../../../_static/mod.svg" alt="Logo"/>
+            </a></p>
+<h1 class="logo"><a href="../../../../index.html">modulation</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../generated/modulation.html">modulation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../modulation.html">modulation</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

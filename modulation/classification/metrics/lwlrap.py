@@ -11,6 +11,8 @@ import numpy
 import sklearn
 
 
+__all__ = ['one_sample_positive_class_precisions','lwlrap_accumulator','calculate_per_class_lwlrap']
+
 def one_sample_positive_class_precisions(
     scores: numpy.array, truths: numpy.array
 ) -> numpy.array:
@@ -125,6 +127,8 @@ class lwlrap_accumulator(object):
     def overall_lwlrap(self):
         """Return the scalar overall lwlrap for cumulated samples."""
         return numpy.sum(self.per_class_lwlrap() * self.per_class_weight())
+
+
 
 
 def calculate_per_class_lwlrap(truth, scores):

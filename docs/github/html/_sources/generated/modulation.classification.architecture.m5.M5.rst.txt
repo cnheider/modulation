@@ -34,6 +34,7 @@ modulation.classification.architecture.m5.M5
       ~M5.get_parameter
       ~M5.get_submodule
       ~M5.half
+      ~M5.ipu
       ~M5.load_state_dict
       ~M5.modules
       ~M5.named_buffers
@@ -46,6 +47,7 @@ modulation.classification.architecture.m5.M5
       ~M5.register_forward_hook
       ~M5.register_forward_pre_hook
       ~M5.register_full_backward_hook
+      ~M5.register_load_state_dict_post_hook
       ~M5.register_module
       ~M5.register_parameter
       ~M5.requires_grad_

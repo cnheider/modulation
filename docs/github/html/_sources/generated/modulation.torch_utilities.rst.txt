@@ -30,4 +30,5 @@ modulation.torch\_utilities
 
    modulation.torch_utilities.collation
    modulation.torch_utilities.padding
+   modulation.torch_utilities.torch_transforms
 

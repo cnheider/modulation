@@ -14,9 +14,8 @@ modulation.classification.metrics.lwlrap
    .. autosummary::
       :toctree:
    
-      calculate_overall_lwlrap_sklearn
-      calculate_per_class_lwlrap
       one_sample_positive_class_precisions
+      calculate_per_class_lwlrap
    
    
 

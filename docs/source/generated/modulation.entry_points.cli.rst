@@ -1,4 +1,4 @@
-﻿modulation.entry\_points.cli
+modulation.entry\_points.cli
 ============================
 
 .. automodule:: modulation.entry_points.cli
