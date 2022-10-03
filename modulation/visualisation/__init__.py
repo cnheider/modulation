@@ -7,4 +7,5 @@ __doc__ = r"""
            Created on 8/2/22
            """
 
-__all__ = []
+from .colorise_waveform import *
+from .salience import *

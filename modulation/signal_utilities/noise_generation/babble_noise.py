@@ -25,6 +25,7 @@ def generate_babble_noise(
     export_path: Path = None,
 ) -> Iterable:
     """
+    Generates babble noise from samples
 
     :param samples:
     :type samples:

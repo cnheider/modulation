@@ -9,9 +9,13 @@ __doc__ = r"""
 
 import numpy
 
+__all__ =['lpc_simple']
+
 
 def lpc_simple(y: numpy.ndarray, m: int) -> numpy.ndarray:
-  "Return m linear predictive coefficients for sequence y using Levinson-Durbin prediction algorithm"
+  '''
+  Return m linear predictive coefficients for sequence y using Levinson-Durbin prediction algorithm
+  '''
 
   # step 1: compute autoregression coefficients R_0, ..., R_m
   r = [y.dot(y)]

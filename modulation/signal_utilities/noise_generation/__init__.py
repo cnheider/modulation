@@ -9,3 +9,5 @@ __doc__ = r"""
 
 from .babble_noise import *
 from .shaped_noise import *
+from .gaussian_noise import *
+from .additive_noise import *

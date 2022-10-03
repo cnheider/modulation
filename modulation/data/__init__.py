@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 __author__ = "Christian Heider Nielsen"
-__doc__ = """ description """
+__doc__ = r"""
 
-from modulation.data.audio.speech import *
+           Created on 04-05-2021
+           """
+
+from .audio import *
+from .signal_generator import *

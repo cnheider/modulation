@@ -12,6 +12,7 @@ import torch
 from scipy.signal import hilbert, lfilter
 from warg import next_pow_2
 
+__all__= ['mel_scale','in_mel_scale','pre_emphasise','pre_emphasise_torch','de_emphasise',"fft_frequencies","hilbert_envelope"]
 
 def mel_scale(x: numpy.ndarray) -> numpy.ndarray:
     """

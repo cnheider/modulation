@@ -11,15 +11,18 @@ import csv
 from enum import Enum
 from pathlib import Path
 
-from draugr import FilterModeEnum, symbol_filter
 from draugr.numpy_utilities import SplitEnum, SplitIndexer
 from torchaudio.datasets import LIBRISPEECH
+from warg import FilterModeEnum, symbol_filter
 
 
 class LibriSpeech(LIBRISPEECH):
     """description"""
 
     class LibriSpeechSubsets(Enum):
+        '''
+
+        '''
         dev_clean = "dev-clean"
         dev_other = "dev-other"
         test_clean = "test-clean"
@@ -29,6 +32,9 @@ class LibriSpeech(LIBRISPEECH):
         train_other_500 = "train-other-500"
 
     class CustomSubsets(Enum):
+        '''
+
+        '''
         male = "M"
         female = "F"
         # TODO: add more like Splits ...

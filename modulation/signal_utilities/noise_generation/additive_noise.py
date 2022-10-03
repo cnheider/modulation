@@ -20,6 +20,7 @@ from scipy.io import wavfile
 
 from modulation.signal_utilities import mask_split_non_zero_concat
 
+__all__ = ['sample_noise','compute_additive_noise_samples']
 
 def sample_noise(
     noise,

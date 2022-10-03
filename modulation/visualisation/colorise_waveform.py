@@ -15,6 +15,8 @@ from matplotlib.collections import LineCollection
 from warg import Number
 
 
+__all__ =['color_plot']
+
 def color_plot(
     xy: numpy.ndarray,
     colors: Optional[Sequence[Number]] = None,

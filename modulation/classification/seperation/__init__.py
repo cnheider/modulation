@@ -6,3 +6,5 @@ __doc__ = r"""
 
            Created on 18-12-2020
            """
+
+from .audio_unet import *

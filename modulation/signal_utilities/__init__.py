@@ -10,3 +10,5 @@ __doc__ = r"""
 from .chopping import *
 from .segmentation import *
 from .splitting import *
+from .audio_utilities import *
+from .noise_generation import *

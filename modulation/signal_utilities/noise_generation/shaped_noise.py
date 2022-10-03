@@ -21,7 +21,7 @@ from scipy.signal import butter, filtfilt, welch
 from warg import next_pow_2
 
 
-__all__ = ["generate_speech_shaped_noise"]
+__all__ = ["generate_speech_shaped_noise",'spectrum_like_noise']
 
 from modulation.signal_utilities.audio_utilities.filtering import hilbert_envelope
 

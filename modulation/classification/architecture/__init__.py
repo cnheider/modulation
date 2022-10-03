@@ -8,3 +8,4 @@ __doc__ = r"""
            """
 
 from .m5 import *
+from .cepstral_a import *
