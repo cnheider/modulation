@@ -12,12 +12,12 @@ cprint(PACKAGE_ROOT)
 sys.path.insert(0, str(PACKAGE_ROOT.absolute()))
 
 from modulation import (
-  PROJECT_AUTHOR,
-  PROJECT_NAME,
-  PROJECT_ORGANISATION,
-  PROJECT_YEAR,
-  PROJECT_VERSION,
-  )
+    PROJECT_AUTHOR,
+    PROJECT_NAME,
+    PROJECT_ORGANISATION,
+    PROJECT_YEAR,
+    PROJECT_VERSION,
+)
 
 # -- General configuration ------------------------------------------------
 
@@ -42,7 +42,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "sphinx.ext.graphviz",
-    ]
+]
 
 napoleon_use_ivar = True
 autosummary_generate = True
@@ -94,7 +94,7 @@ language = "en"
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['**/*exclude*', '**/*Exclude*']
+exclude_patterns = ["**/*exclude*", "**/*Exclude*"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 highlight_language = "python"
@@ -124,7 +124,7 @@ html_logo = "../../.github/images/mod.svg"
 html_theme_options = {
     # "logo_only": True,
     # "display_version": False,
-    }
+}
 
 html_baseurl = f"{PROJECT_ORGANISATION}.github.io/{PROJECT_NAME}"
 
@@ -148,7 +148,7 @@ latex_elements = {
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
-    }
+}
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
@@ -160,8 +160,8 @@ latex_documents = [
         f"{PROJECT_NAME} Documentation",
         PROJECT_AUTHOR,
         "manual",
-        )
-    ]
+    )
+]
 
 # -- Options for manual page output ---------------------------------------
 
@@ -169,7 +169,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     (master_doc, PROJECT_NAME, f"{PROJECT_NAME} Documentation", [PROJECT_AUTHOR], 1)
-    ]
+]
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -185,8 +185,8 @@ texinfo_documents = [
         PROJECT_NAME,
         "One line description of project.",
         "Miscellaneous",
-        )
-    ]
+    )
+]
 
 # -- Options for Epub output ----------------------------------------------
 
@@ -211,8 +211,8 @@ epub_exclude_files = ["search.html"]
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "python": ("https://docs.python.org/", None),
-    "numpy":  ("http://docs.scipy.org/doc/numpy/", None),
-    }
+    "numpy": ("http://docs.scipy.org/doc/numpy/", None),
+}
 
 # -- A patch that prevents Sphinx from cross-referencing ivar tags -------
 # See http://stackoverflow.com/a/41184353/3343043
@@ -223,77 +223,77 @@ from sphinx.util.docfields import TypedField
 
 
 def patched_make_field(self, types, domain, items, **kw):
-  """
-
-  :param self:
-  :type self:
-  :param types:
-  :type types:
-  :param domain:
-  :type domain:
-  :param items:
-  :type items:
-  :param kw:
-  :type kw:
-  :return:
-  :rtype:
-  """
-
-  # `kw` catches `env=None` needed for newer sphinx while maintaining
-  #  backwards compatibility when passed along further down!
-  # #type: (List, unicode, Tuple) -> nodes.field
-  def handle_item(fieldarg, content):
     """
 
-    :param fieldarg:
-    :type fieldarg:
-    :param content:
-    :type content:
+    :param self:
+    :type self:
+    :param types:
+    :type types:
+    :param domain:
+    :type domain:
+    :param items:
+    :type items:
+    :param kw:
+    :type kw:
     :return:
     :rtype:
     """
-    par = nodes.paragraph()
-    par += addnodes.literal_strong("", fieldarg)  # Patch: this line added
-    # par.extend(self.make_xrefs(self.rolename, domain, fieldarg,
-    #                           addnodes.literal_strong))
-    if fieldarg in types:
-      par += nodes.Text(" (")
-      # NOTE: using .pop() here to prevent a single type node to be
-      # inserted twice into the doctree, which leads to
-      # inconsistencies later when references are resolved
-      fieldtype = types.pop(fieldarg)
-      if len(fieldtype) == 1 and isinstance(fieldtype[0], nodes.Text):
-        typename = "".join(n.astext() for n in fieldtype)
-        typename = typename.replace("int", "python:int")
-        typename = typename.replace("long", "python:long")
-        typename = typename.replace("float", "python:float")
-        typename = typename.replace("type", "python:type")
-        par.extend(
-            self.make_xrefs(
-                self.typerolename,
-                domain,
-                typename,
-                addnodes.literal_emphasis,
-                **kw,
-                )
-            )
-      else:
-        par += fieldtype
-      par += nodes.Text(")")
-    par += nodes.Text(" -- ")
-    par += content
-    return par
 
-  field_name = nodes.field_name("", self.label)
-  if len(items) == 1 and self.can_collapse:
-    field_arg, content = items[0]
-    body_node = handle_item(field_arg, content)
-  else:
-    body_node = self.list_type()
-    for field_arg, content in items:
-      body_node += nodes.list_item("", handle_item(field_arg, content))
-  field_body = nodes.field_body("", body_node)
-  return nodes.field("", field_name, field_body)
+    # `kw` catches `env=None` needed for newer sphinx while maintaining
+    #  backwards compatibility when passed along further down!
+    # #type: (List, unicode, Tuple) -> nodes.field
+    def handle_item(fieldarg, content):
+        """
+
+        :param fieldarg:
+        :type fieldarg:
+        :param content:
+        :type content:
+        :return:
+        :rtype:
+        """
+        par = nodes.paragraph()
+        par += addnodes.literal_strong("", fieldarg)  # Patch: this line added
+        # par.extend(self.make_xrefs(self.rolename, domain, fieldarg,
+        #                           addnodes.literal_strong))
+        if fieldarg in types:
+            par += nodes.Text(" (")
+            # NOTE: using .pop() here to prevent a single type node to be
+            # inserted twice into the doctree, which leads to
+            # inconsistencies later when references are resolved
+            fieldtype = types.pop(fieldarg)
+            if len(fieldtype) == 1 and isinstance(fieldtype[0], nodes.Text):
+                typename = "".join(n.astext() for n in fieldtype)
+                typename = typename.replace("int", "python:int")
+                typename = typename.replace("long", "python:long")
+                typename = typename.replace("float", "python:float")
+                typename = typename.replace("type", "python:type")
+                par.extend(
+                    self.make_xrefs(
+                        self.typerolename,
+                        domain,
+                        typename,
+                        addnodes.literal_emphasis,
+                        **kw,
+                    )
+                )
+            else:
+                par += fieldtype
+            par += nodes.Text(")")
+        par += nodes.Text(" -- ")
+        par += content
+        return par
+
+    field_name = nodes.field_name("", self.label)
+    if len(items) == 1 and self.can_collapse:
+        field_arg, content = items[0]
+        body_node = handle_item(field_arg, content)
+    else:
+        body_node = self.list_type()
+        for field_arg, content in items:
+            body_node += nodes.list_item("", handle_item(field_arg, content))
+    field_body = nodes.field_body("", body_node)
+    return nodes.field("", field_name, field_body)
 
 
 TypedField.make_field = patched_make_field

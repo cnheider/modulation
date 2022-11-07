@@ -18,7 +18,7 @@ __all__ = [
     "separate_mask_regions",
 ]
 
-from typing import Sequence, Iterable, Tuple
+from typing import Sequence, Tuple
 
 import numpy
 

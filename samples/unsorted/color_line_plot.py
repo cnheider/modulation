@@ -16,15 +16,15 @@ from modulation.visualisation.colorise_waveform import color_plot
 
 
 def main():
-  """description"""
-  lens = 9999
-  data = (numpy.random.random((lens)) - 0.5).cumsum(axis = 0)
-  xy = numpy.vstack((numpy.arange(lens), data)).T
-  print(xy.shape)
+    """description"""
+    lens = 9999
+    data = (numpy.random.random((lens)) - 0.5).cumsum(axis=0)
+    xy = numpy.vstack((numpy.arange(lens), data)).T
+    print(xy.shape)
 
-  color_plot(xy)
-  pyplot.show()
+    color_plot(xy)
+    pyplot.show()
 
 
 if __name__ == "__main__":
-  main()
+    main()

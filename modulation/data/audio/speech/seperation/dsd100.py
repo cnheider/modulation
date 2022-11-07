@@ -4,9 +4,10 @@ from typing import Tuple
 
 import torch
 import torchaudio
+from torch.utils.data import Dataset
 
 
-class DSD100(torch.utils.data.Dataset):
+class DSD100(Dataset):
     """
     DSD100 dataset for audio source separation (2-stem)
     :param root: Path to the directory where the dataset is found.

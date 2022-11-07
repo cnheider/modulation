@@ -11,16 +11,16 @@ from pathlib import Path
 from typing import Any
 
 import numpy
-from draugr.visualisation import progress_bar
-from warg import ensure_existence
 from draugr.numpy_utilities import root_mean_square
-
+from draugr.visualisation import progress_bar
 from scipy import signal
 from scipy.io import wavfile
+from warg import ensure_existence
 
 from modulation.signal_utilities import mask_split_non_zero_concat
 
-__all__ = ['sample_noise','compute_additive_noise_samples']
+__all__ = ["sample_noise", "compute_additive_noise_samples"]
+
 
 def sample_noise(
     noise,

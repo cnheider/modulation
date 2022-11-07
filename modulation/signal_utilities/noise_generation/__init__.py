@@ -7,7 +7,7 @@ __doc__ = r"""
            Created on 09-12-2020
            """
 
-from .babble_noise import *
-from .shaped_noise import *
-from .gaussian_noise import *
 from .additive_noise import *
+from .babble_noise import *
+from .gaussian_noise import *
+from .shaped_noise import *

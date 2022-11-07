@@ -7,5 +7,5 @@ __doc__ = r"""
            Created on 04-05-2021
            """
 
-from .seperation import *
 from .recognition import *
+from .seperation import *

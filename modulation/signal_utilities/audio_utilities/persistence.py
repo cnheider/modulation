@@ -13,7 +13,8 @@ from typing import Tuple
 import numpy
 import soundfile
 
-__all__=['audio_read','audio_write']
+__all__ = ["audio_read", "audio_write"]
+
 
 def audio_read(
     path: str, norm: bool = True, start: int = 0, stop: int = None
@@ -84,5 +85,5 @@ def audio_write(
     soundfile.write(dest_path, data, fs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

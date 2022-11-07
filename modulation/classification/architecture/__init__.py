@@ -7,5 +7,5 @@ __doc__ = r"""
            Created on 18-11-2020
            """
 
-from .m5 import *
 from .cepstral_a import *
+from .m5 import *

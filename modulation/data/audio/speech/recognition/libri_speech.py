@@ -20,9 +20,8 @@ class LibriSpeech(LIBRISPEECH):
     """description"""
 
     class LibriSpeechSubsets(Enum):
-        '''
+        """ """
 
-        '''
         dev_clean = "dev-clean"
         dev_other = "dev-other"
         test_clean = "test-clean"
@@ -32,9 +31,8 @@ class LibriSpeech(LIBRISPEECH):
         train_other_500 = "train-other-500"
 
     class CustomSubsets(Enum):
-        '''
+        """ """
 
-        '''
         male = "M"
         female = "F"
         # TODO: add more like Splits ...

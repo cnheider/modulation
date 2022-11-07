@@ -8,5 +8,5 @@ __doc__ = r"""
            """
 
 
-from .persistence import *
 from .filtering import *
+from .persistence import *

@@ -15,7 +15,8 @@ from torch import nn
 
 from modulation.torch_utilities import torch_transforms
 
-__all__ = ['UNetConvBlock','UNetDeconvBlock','UNet']
+__all__ = ["UNetConvBlock", "UNetDeconvBlock", "UNet"]
+
 
 class UNetConvBlock(nn.Module):
     """description"""

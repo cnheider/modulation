@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'/>
+    <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
+    <title>modulation.noise_generation.gaussian_noise &#8212; modulation 0.0.1 documentation</title>
+    <link href='../../../_static/pygments.css' rel='stylesheet' type='text/css'/>
+    <link href='../../../_static/alabaster.css' rel='stylesheet' type='text/css'/>
+    <link href='../../../_static/graphviz.css' rel='stylesheet' type='text/css'/>
+    <script data-url_root='../../../' id='documentation_options' src='../../../_static/documentation_options.js'></script>
+    <script src='../../../_static/jquery.js'></script>
+    <script src='../../../_static/underscore.js'></script>
+    <script src='../../../_static/_sphinx_javascript_frameworks_compat.js'></script>
+    <script src='../../../_static/doctools.js'></script>
+    <link href='aivclab.github.io/modulation/_modules/modulation/noise_generation/gaussian_noise.html' rel='canonical'/>
+    <link href='../../../genindex.html' rel='index' title='Index'/>
+    <link href='../../../search.html' rel='search' title='Search'/>
+
+    <link href='../../../_static/custom.css' rel='stylesheet' type='text/css'/>
+
+
+    <meta content='width=device-width, initial-scale=0.9, maximum-scale=0.9' name='viewport'/>
+
+  </head>
+  <body>
+
+
+    <div class='document'>
+      <div class='documentwrapper'>
+        <div class='bodywrapper'>
+
+
+          <div class='body' role='main'>
+
+            <h1>Source code for modulation.noise_generation.gaussian_noise</h1>
+            <div class='highlight'><pre>
+<span></span><span class='ch'>#!/usr/bin/env python3</span>
+<span class='c1'># -*- coding: utf-8 -*-</span>
+
+<span class='n'>__author__</span> <span class='o'>=</span> <span class='s2'>&quot;Christian Heider Nielsen&quot;</span>
+<span class='vm'>__doc__</span> <span class='o'>=</span> <span class='sa'>r</span><span class='s2'>&quot;&quot;&quot;</span>
+
+<span class='s2'>           Created on 10-12-2020</span>
+<span class='s2'>           &quot;&quot;&quot;</span>
+
+<span class='kn'>from</span> <span class='nn'>enum</span> <span class='kn'>import</span> <span class='n'>Enum</span>
+<span class='kn'>from</span> <span class='nn'>functools</span> <span class='kn'>import</span> <span class='n'>partial</span>
+<span class='kn'>from</span> <span class='nn'>pathlib</span> <span class='kn'>import</span> <span class='n'>Path</span>
+
+<span class='kn'>import</span> <span class='nn'>numpy</span>
+<span class='kn'>import</span> <span class='nn'>torchaudio</span>
+<span class='kn'>from</span> <span class='nn'>draugr.numpy_utilities</span> <span class='kn'>import</span> <span class='n'>get_sampler</span><span class='p'>,</span> <span class='n'>normalise_signal</span>
+<span class='kn'>from</span> <span class='nn'>draugr.torch_utilities</span> <span class='kn'>import</span> <span class='n'>to_tensor</span>
+<span class='kn'>from</span> <span class='nn'>matplotlib</span> <span class='kn'>import</span> <span class='n'>pyplot</span>
+<span class='kn'>from</span> <span class='nn'>numpy.fft</span> <span class='kn'>import</span> <span class='n'>irfft</span><span class='p'>,</span> <span class='n'>rfft</span>
+
+
+<div class='viewcode-block' id='white_noise'><a class='viewcode-back' href='../../../generated/modulation.noise_generation.gaussian_noise.white_noise.html#modulation.noise_generation.gaussian_noise.white_noise'>[docs]</a><span class='k'>def</span> <span class='nf'>white_noise</span><span class='p'>(</span><span class='n'>length</span><span class='p'>:</span> <span class='nb'>int</span><span class='p'>,</span> <span class='n'>seed</span><span class='p'>:</span> <span class='nb'>int</span> <span class='o'>=</span> <span class='kc'>None</span><span class='p'>)</span> <span class='o'>-&gt;</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>ndarray</span><span class='p'>:</span>
+  <span class='sd'>&quot;&quot;&quot;</span>
+<span class='sd'>  White noise.</span>
+
+<span class='sd'>  * N: Amount of samples.</span>
+
+<span class='sd'>  White noise has a constant power density.</span>
+<span class='sd'>  Its narrowband spectrum is therefore flat.</span>
+<span class='sd'>  The power in white noise will increase by a factor of two for each octave band,</span>
+<span class='sd'>  and therefore increases with 3 dB per octave.</span>
+
+<span class='sd'>  &quot;&quot;&quot;</span>
+  <span class='k'>if</span> <span class='n'>seed</span><span class='p'>:</span>
+    <span class='n'>numpy</span><span class='o'>.</span><span class='n'>random</span><span class='o'>.</span><span class='n'>seed</span><span class='p'>(</span><span class='n'>seed</span><span class='p'>)</span>
+  <span class='k'>return</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>random</span><span class='o'>.</span><span class='n'>randn</span><span class='p'>(</span><span class='n'>length</span><span class='p'>)</span></div>
+
+
+<div class='viewcode-block' id='blue_noise'><a class='viewcode-back' href='../../../generated/modulation.noise_generation.gaussian_noise.blue_noise.html#modulation.noise_generation.gaussian_noise.blue_noise'>[docs]</a><span class='k'>def</span> <span class='nf'>blue_noise</span><span class='p'>(</span><span class='n'>length</span><span class='p'>:</span> <span class='nb'>int</span><span class='p'>,</span> <span class='n'>seed</span><span class='p'>:</span> <span class='nb'>int</span> <span class='o'>=</span> <span class='kc'>None</span><span class='p'>)</span> <span class='o'>-&gt;</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>ndarray</span><span class='p'>:</span>
+  <span class='sd'>&quot;&quot;&quot;</span>
+<span class='sd'>  Blue noise.</span>
+
+<span class='sd'>  * N: Amount of samples.</span>
+
+<span class='sd'>  Power increases with 6 dB per octave.</span>
+<span class='sd'>  Power density increases with 3 dB per octave.</span>
+<span class='sd'>  &quot;&quot;&quot;</span>
+  <span class='n'>x</span> <span class='o'>=</span> <span class='n'>rfft</span><span class='p'>(</span><span class='n'>white_noise</span><span class='p'>(</span><span class='n'>length</span><span class='p'>,</span> <span class='n'>seed</span><span class='p'>))</span> <span class='o'>/</span> <span class='n'>length</span>
+
+  <span class='k'>return</span> <span class='n'>normalise_signal</span><span class='p'>(</span><span class='n'>irfft</span><span class='p'>(</span><span class='n'>x</span> <span class='o'>*</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>sqrt</span><span class='p'>(</span><span class='n'>numpy</span><span class='o'>.</span><span class='n'>arange</span><span class='p'>(</span><span class='nb'>len</span><span class='p'>(</span><span class='n'>x</span><span class='p'>))))</span><span class='o'>.</span><span class='n'>real</span><span class='p'>[:</span><span class='n'>length</span><span class='p'>])</span>  <span class='c1'># Filter</span></div>
+
+
+<div class='viewcode-block' id='brown_noise'><a class='viewcode-back' href='../../../generated/modulation.noise_generation.gaussian_noise.brown_noise.html#modulation.noise_generation.gaussian_noise.brown_noise'>[docs]</a><span class='k'>def</span> <span class='nf'>brown_noise</span><span class='p'>(</span><span class='n'>length</span><span class='p'>:</span> <span class='nb'>int</span><span class='p'>,</span> <span class='n'>seed</span><span class='p'>:</span> <span class='nb'>int</span> <span class='o'>=</span> <span class='kc'>None</span><span class='p'>)</span> <span class='o'>-&gt;</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>ndarray</span><span class='p'>:</span>
+  <span class='sd'>&quot;&quot;&quot;</span>
+<span class='sd'>  Brown noise.</span>
+
+<span class='sd'>  * N: Amount of samples.</span>
+
+<span class='sd'>  Power decreases with -3 dB per octave.</span>
+<span class='sd'>  Power density decreases with 6 dB per octave.</span>
+
+<span class='sd'>  &quot;&quot;&quot;</span>
+  <span class='n'>x</span> <span class='o'>=</span> <span class='n'>rfft</span><span class='p'>(</span><span class='n'>white_noise</span><span class='p'>(</span><span class='n'>length</span><span class='p'>,</span> <span class='n'>seed</span><span class='p'>))</span> <span class='o'>/</span> <span class='n'>length</span>
+  <span class='k'>return</span> <span class='n'>normalise_signal</span><span class='p'>(</span><span class='n'>irfft</span><span class='p'>(</span><span class='n'>x</span> <span class='o'>/</span> <span class='p'>(</span><span class='n'>numpy</span><span class='o'>.</span><span class='n'>arange</span><span class='p'>(</span><span class='nb'>len</span><span class='p'>(</span><span class='n'>x</span><span class='p'>))</span> <span class='o'>+</span> <span class='mi'>1</span><span class='p'>))</span><span class='o'>.</span><span class='n'>real</span><span class='p'>[:</span><span class='n'>length</span><span class='p'>])</span>  <span class='c1'># Filter</span></div>
+
+
+<div class='viewcode-block' id='pink_noise'><a class='viewcode-back' href='../../../generated/modulation.noise_generation.gaussian_noise.pink_noise.html#modulation.noise_generation.gaussian_noise.pink_noise'>[docs]</a><span class='k'>def</span> <span class='nf'>pink_noise</span><span class='p'>(</span><span class='n'>length</span><span class='p'>:</span> <span class='nb'>int</span><span class='p'>,</span> <span class='n'>seed</span><span class='p'>:</span> <span class='nb'>int</span> <span class='o'>=</span> <span class='kc'>None</span><span class='p'>)</span> <span class='o'>-&gt;</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>ndarray</span><span class='p'>:</span>
+  <span class='sd'>&quot;&quot;&quot;</span>
+<span class='sd'>  Pink noise.</span>
+
+<span class='sd'>  :param length: Amount of samples.</span>
+<span class='sd'>  :param seed: State of PRNG.</span>
+<span class='sd'>  :type seed: :class:`numpy.random.RandomState`</span>
+
+<span class='sd'>  Pink noise has equal power in bands that are proportionally wide.</span>
+<span class='sd'>  Power density decreases with 3 dB per octave.</span>
+
+<span class='sd'>  &quot;&quot;&quot;</span>
+  <span class='c1'># This method uses the filter with the following coefficients.</span>
+  <span class='c1'># b = numpy.array([0.049922035, -0.095993537, 0.050612699, -0.004408786])</span>
+  <span class='c1'># a = numpy.array([1, -2.494956002, 2.017265875, -0.522189400])</span>
+  <span class='c1'># return lfilter(B, A, numpy.random.randn(N))</span>
+  <span class='c1'># Another way would be using the FFT</span>
+  <span class='c1'># x = numpy.random.randn(N)</span>
+  <span class='c1'># X = rfft(x) / N</span>
+  <span class='n'>sampler</span> <span class='o'>=</span> <span class='n'>get_sampler</span><span class='p'>(</span><span class='n'>seed</span><span class='p'>)</span>
+  <span class='n'>uneven</span> <span class='o'>=</span> <span class='n'>length</span> <span class='o'>%</span> <span class='mi'>2</span>
+  <span class='n'>x</span> <span class='o'>=</span> <span class='n'>sampler</span><span class='o'>.</span><span class='n'>randn</span><span class='p'>(</span><span class='n'>length</span> <span class='o'>//</span> <span class='mi'>2</span> <span class='o'>+</span> <span class='mi'>1</span> <span class='o'>+</span> <span class='n'>uneven</span><span class='p'>)</span> <span class='o'>+</span> <span class='mi'>1</span><span class='n'>j</span> <span class='o'>*</span> <span class='n'>sampler</span><span class='o'>.</span><span class='n'>randn</span><span class='p'>(</span><span class='n'>length</span> <span class='o'>//</span> <span class='mi'>2</span> <span class='o'>+</span> <span class='mi'>1</span> <span class='o'>+</span> <span class='n'>uneven</span><span class='p'>)</span>
+  <span class='n'>y</span> <span class='o'>=</span> <span class='p'>(</span><span class='n'>irfft</span><span class='p'>(</span><span class='n'>x</span> <span class='o'>/</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>sqrt</span><span class='p'>(</span><span class='n'>numpy</span><span class='o'>.</span><span class='n'>arange</span><span class='p'>(</span><span class='nb'>len</span><span class='p'>(</span><span class='n'>x</span><span class='p'>))</span> <span class='o'>+</span> <span class='mf'>1.0</span><span class='p'>)))</span><span class='o'>.</span><span class='n'>real</span>  <span class='c1'># +1 to avoid divide by zero</span>
+  <span class='k'>if</span> <span class='n'>uneven</span><span class='p'>:</span>
+    <span class='n'>y</span> <span class='o'>=</span> <span class='n'>y</span><span class='p'>[:</span><span class='o'>-</span><span class='mi'>1</span><span class='p'>]</span>
+  <span class='k'>return</span> <span class='n'>normalise_signal</span><span class='p'>(</span><span class='n'>y</span><span class='p'>)</span></div>
+
+
+<div class='viewcode-block' id='violet_noise'><a class='viewcode-back' href='../../../generated/modulation.noise_generation.gaussian_noise.violet_noise.html#modulation.noise_generation.gaussian_noise.violet_noise'>[docs]</a><span class='k'>def</span> <span class='nf'>violet_noise</span><span class='p'>(</span><span class='n'>length</span><span class='p'>:</span> <span class='nb'>int</span><span class='p'>,</span> <span class='n'>seed</span><span class='p'>:</span> <span class='nb'>int</span> <span class='o'>=</span> <span class='kc'>None</span><span class='p'>)</span> <span class='o'>-&gt;</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>ndarray</span><span class='p'>:</span>
+  <span class='sd'>&quot;&quot;&quot;</span>
+<span class='sd'>  Violet noise. Power increases with 6 dB per octave.</span>
+
+<span class='sd'>  :param length: Amount of samples.</span>
+<span class='sd'>  :param seed: State of PRNG.</span>
+<span class='sd'>  :type seed: :class:`numpy.random.RandomState`</span>
+
+<span class='sd'>  Power increases with +9 dB per octave.</span>
+<span class='sd'>  Power density increases with +6 dB per octave.</span>
+
+<span class='sd'>  &quot;&quot;&quot;</span>
+  <span class='n'>sampler</span> <span class='o'>=</span> <span class='n'>get_sampler</span><span class='p'>(</span><span class='n'>seed</span><span class='p'>)</span>
+  <span class='n'>uneven</span> <span class='o'>=</span> <span class='n'>length</span> <span class='o'>%</span> <span class='mi'>2</span>
+  <span class='n'>x</span> <span class='o'>=</span> <span class='n'>sampler</span><span class='o'>.</span><span class='n'>randn</span><span class='p'>(</span><span class='n'>length</span> <span class='o'>//</span> <span class='mi'>2</span> <span class='o'>+</span> <span class='mi'>1</span> <span class='o'>+</span> <span class='n'>uneven</span><span class='p'>)</span> <span class='o'>+</span> <span class='mi'>1</span><span class='n'>j</span> <span class='o'>*</span> <span class='n'>sampler</span><span class='o'>.</span><span class='n'>randn</span><span class='p'>(</span><span class='n'>length</span> <span class='o'>//</span> <span class='mi'>2</span> <span class='o'>+</span> <span class='mi'>1</span> <span class='o'>+</span> <span class='n'>uneven</span><span class='p'>)</span>
+  <span class='n'>y</span> <span class='o'>=</span> <span class='p'>(</span><span class='n'>irfft</span><span class='p'>(</span><span class='n'>x</span> <span class='o'>*</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>arange</span><span class='p'>(</span><span class='nb'>len</span><span class='p'>(</span><span class='n'>x</span><span class='p'>))))</span><span class='o'>.</span><span class='n'>real</span>  <span class='c1'># Filter</span>
+  <span class='k'>if</span> <span class='n'>uneven</span><span class='p'>:</span>
+    <span class='n'>y</span> <span class='o'>=</span> <span class='n'>y</span><span class='p'>[:</span><span class='o'>-</span><span class='mi'>1</span><span class='p'>]</span>
+  <span class='k'>return</span> <span class='n'>normalise_signal</span><span class='p'>(</span><span class='n'>y</span><span class='p'>)</span></div>
+
+
+<div class='viewcode-block' id='GaussianNoiseTypeEnum'><a class='viewcode-back' href='../../../generated/modulation.noise_generation.gaussian_noise.GaussianNoiseTypeEnum.html#modulation.noise_generation.gaussian_noise.GaussianNoiseTypeEnum'>[docs]</a><span class='k'>class</span> <span class='nc'>GaussianNoiseTypeEnum</span><span class='p'>(</span><span class='n'>Enum</span><span class='p'>):</span>
+  <span class='sa'>r</span><span class='sd'>&quot;&quot;&quot; description &quot;&quot;&quot;</span>
+  <span class='n'>white</span> <span class='o'>=</span> <span class='n'>partial</span><span class='p'>(</span><span class='n'>white_noise</span><span class='p'>)</span>  <span class='c1'># Partial to workaround interpreting as a method definition</span>
+  <span class='n'>brown</span> <span class='o'>=</span> <span class='n'>partial</span><span class='p'>(</span><span class='n'>brown_noise</span><span class='p'>)</span>
+  <span class='n'>blue</span> <span class='o'>=</span> <span class='n'>partial</span><span class='p'>(</span><span class='n'>blue_noise</span><span class='p'>)</span>
+  <span class='n'>pink</span> <span class='o'>=</span> <span class='n'>partial</span><span class='p'>(</span><span class='n'>pink_noise</span><span class='p'>)</span>
+  <span class='n'>violet</span> <span class='o'>=</span> <span class='n'>partial</span><span class='p'>(</span><span class='n'>violet_noise</span><span class='p'>)</span>
+
+  <span class='k'>def</span> <span class='fm'>__call__</span><span class='p'>(</span><span class='bp'>self</span><span class='p'>,</span> <span class='o'>*</span><span class='n'>args</span><span class='p'>,</span> <span class='o'>**</span><span class='n'>kwargs</span><span class='p'>):</span>
+    <span class='k'>return</span> <span class='bp'>self</span><span class='o'>.</span><span class='n'>value</span><span class='p'>(</span><span class='o'>*</span><span class='n'>args</span><span class='p'>,</span> <span class='o'>**</span><span class='n'>kwargs</span><span class='p'>)</span></div>
+
+
+<div class='viewcode-block' id='generate_noise'><a class='viewcode-back' href='../../../generated/modulation.noise_generation.gaussian_noise.generate_noise.html#modulation.noise_generation.gaussian_noise.generate_noise'>[docs]</a><span class='k'>def</span> <span class='nf'>generate_noise</span><span class='p'>(</span>
+    <span class='n'>length</span><span class='p'>:</span> <span class='nb'>int</span><span class='p'>,</span>
+    <span class='o'>*</span><span class='p'>,</span>
+    <span class='n'>seed</span><span class='p'>:</span> <span class='nb'>int</span> <span class='o'>=</span> <span class='kc'>None</span><span class='p'>,</span>
+    <span class='n'>noise_type</span><span class='p'>:</span> <span class='n'>GaussianNoiseTypeEnum</span> <span class='o'>=</span> <span class='n'>GaussianNoiseTypeEnum</span><span class='o'>.</span><span class='n'>white</span><span class='p'>,</span>
+    <span class='n'>export_path</span><span class='p'>:</span> <span class='n'>Path</span> <span class='o'>=</span> <span class='kc'>None</span><span class='p'>,</span>
+    <span class='n'>sampling_rate</span><span class='p'>:</span> <span class='nb'>int</span> <span class='o'>=</span> <span class='mi'>16000</span><span class='p'>,</span>
+    <span class='p'>)</span> <span class='o'>-&gt;</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>ndarray</span><span class='p'>:</span>
+  <span class='sd'>&quot;&quot;&quot;</span>
+
+<span class='sd'>  :param length:</span>
+<span class='sd'>  :type length:</span>
+<span class='sd'>  :param seed:</span>
+<span class='sd'>  :type seed:</span>
+<span class='sd'>  :param noise_type:</span>
+<span class='sd'>  :type noise_type:</span>
+<span class='sd'>  :param export_path:</span>
+<span class='sd'>  :type export_path:</span>
+<span class='sd'>  :param sampling_rate:</span>
+<span class='sd'>  :type sampling_rate:</span>
+<span class='sd'>  :return:</span>
+<span class='sd'>  :rtype:</span>
+<span class='sd'>  &quot;&quot;&quot;</span>
+  <span class='n'>normalised</span> <span class='o'>=</span> <span class='n'>noise_type</span><span class='p'>(</span><span class='n'>length</span><span class='p'>,</span> <span class='n'>seed</span><span class='p'>)</span>
+  <span class='k'>if</span> <span class='n'>export_path</span><span class='p'>:</span>
+    <span class='n'>torchaudio</span><span class='o'>.</span><span class='n'>save</span><span class='p'>(</span><span class='nb'>str</span><span class='p'>(</span><span class='n'>export_path</span><span class='p'>),</span> <span class='n'>to_tensor</span><span class='p'>(</span><span class='n'>normalised</span><span class='p'>),</span> <span class='n'>sampling_rate</span><span class='p'>)</span>
+  <span class='k'>return</span> <span class='n'>normalised</span></div>
+
+
+<span class='k'>if</span> <span class='vm'>__name__</span> <span class='o'>==</span> <span class='s2'>&quot;__main__&quot;</span><span class='p'>:</span>
+
+  <span class='k'>def</span> <span class='nf'>asijsda</span><span class='p'>():</span>
+    <span class='sd'>&quot;&quot;&quot;</span>
+
+<span class='sd'>    &quot;&quot;&quot;</span>
+    <span class='n'>sampling_rate</span> <span class='o'>=</span> <span class='mi'>16000</span>
+    <span class='n'>length_sec</span> <span class='o'>=</span> <span class='mi'>5</span>
+    <span class='n'>noises</span> <span class='o'>=</span> <span class='p'>{}</span>
+    <span class='k'>for</span> <span class='n'>a</span> <span class='ow'>in</span> <span class='n'>GaussianNoiseTypeEnum</span><span class='p'>:</span>
+      <span class='n'>name</span> <span class='o'>=</span> <span class='sa'>f</span><span class='s2'>&quot;</span><span class='si'>{</span><span class='n'>a</span><span class='o'>.</span><span class='n'>name</span><span class='si'>}</span><span class='s2'>_noise.wav&quot;</span>
+
+      <span class='n'>noise</span> <span class='o'>=</span> <span class='n'>generate_noise</span><span class='p'>(</span>
+          <span class='n'>sampling_rate</span> <span class='o'>*</span> <span class='n'>length_sec</span><span class='p'>,</span>
+          <span class='n'>seed</span> <span class='o'>=</span> <span class='mi'>42</span><span class='p'>,</span>
+          <span class='n'>noise_type</span> <span class='o'>=</span> <span class='n'>a</span><span class='p'>,</span>
+          <span class='n'>export_path</span> <span class='o'>=</span> <span class='n'>Path</span><span class='p'>(</span><span class='s2'>&quot;exclude&quot;</span><span class='p'>)</span> <span class='o'>/</span> <span class='n'>name</span><span class='p'>,</span>
+          <span class='p'>)</span>
+      <span class='n'>noises</span><span class='p'>[</span><span class='n'>name</span><span class='p'>]</span> <span class='o'>=</span> <span class='n'>noise</span>
+
+    <span class='n'>channels</span> <span class='o'>=</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>array</span><span class='p'>(</span><span class='nb'>list</span><span class='p'>(</span><span class='n'>noises</span><span class='o'>.</span><span class='n'>values</span><span class='p'>()))</span>
+    <span class='n'>channels</span> <span class='o'>=</span> <span class='n'>numpy</span><span class='o'>.</span><span class='n'>concatenate</span><span class='p'>([</span><span class='n'>channels</span><span class='p'>,</span> <span class='n'>normalise_signal</span><span class='p'>(</span><span class='n'>channels</span><span class='o'>.</span><span class='n'>sum</span><span class='p'>(</span><span class='mi'>0</span><span class='p'>,</span> <span class='n'>keepdims</span> <span class='o'>=</span> <span class='kc'>True</span><span class='p'>))])</span>
+    <span class='n'>channel_names</span> <span class='o'>=</span> <span class='nb'>list</span><span class='p'>(</span><span class='n'>noises</span><span class='o'>.</span><span class='n'>keys</span><span class='p'>())</span> <span class='o'>+</span> <span class='p'>[</span><span class='s2'>&quot;mixed&quot;</span><span class='p'>]</span>
+    <span class='kn'>from</span> <span class='nn'>draugr</span> <span class='kn'>import</span> <span class='n'>dissected_channel_plot</span>
+
+    <span class='n'>dissected_channel_plot</span><span class='p'>(</span>
+        <span class='n'>channels</span><span class='p'>,</span>
+        <span class='n'>channel_names</span> <span class='o'>=</span> <span class='n'>channel_names</span><span class='p'>,</span>
+        <span class='n'>sampling_rate</span> <span class='o'>=</span> <span class='n'>sampling_rate</span><span class='p'>,</span>
+        <span class='n'>max_resolution</span> <span class='o'>=</span> <span class='mi'>16000</span><span class='p'>,</span>
+        <span class='p'>)</span>
+    <span class='n'>pyplot</span><span class='o'>.</span><span class='n'>show</span><span class='p'>()</span>
+
+    <span class='n'>asijsda</span><span class='p'>()</span>
+</pre>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+      <div aria-label='main navigation' class='sphinxsidebar' role='navigation'>
+        <div class='sphinxsidebarwrapper'>
+          <h1 class='logo'><a href='../../../index.html'>modulation</a></h1>
+
+
+          <h3>Navigation</h3>
+          <ul>
+            <li class='toctree-l1'><a class='reference internal' href='../../../generated/modulation.html'>modulation</a></li>
+          </ul>
+          <p class='caption' role='heading'><span class='caption-text'>Notes</span></p>
+          <ul>
+            <li class='toctree-l1'><a class='reference internal' href='../../../getting_started.html'>Getting Started</a></li>
+          </ul>
+
+          <div class='relations'>
+            <h3>Related Topics</h3>
+            <ul>
+              <li><a href='../../../index.html'>Documentation overview</a>
+                <ul>
+                  <li><a href='../../index.html'>Module code</a>
+                    <ul>
+                      <li><a href='../../modulation.html'>modulation</a>
+                        <ul>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div id='searchbox' role='search' style='display: none'>
+            <h3 id='searchlabel'>Quick search</h3>
+            <div class='searchformwrapper'>
+              <form action='../../../search.html' class='search' method='get'>
+                <input aria-labelledby='searchlabel' autocapitalize='off' autocomplete='off' autocorrect='off' name='q' spellcheck='false' type='text'/>
+                <input type='submit' value='Go'/>
+              </form>
+            </div>
+          </div>
+          <script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+        </div>
+      </div>
+      <div class='clearer'></div>
+    </div>
+    <div class='footer'>
+      &copy;.
+
+      |
+      Powered by <a href='http://sphinx-doc.org/'>Sphinx 5.0.2</a>
+      &amp; <a href='https://github.com/bitprophet/alabaster'>Alabaster 0.7.12</a>
+
+    </div>
+
+
+  </body>
+</html>
