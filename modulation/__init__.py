@@ -10,7 +10,7 @@ from apppath import AppPath
 
 __project__ = "Modulation"
 __author__ = "Christian Heider Nielsen"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __doc__ = r"""
 .. module:: modulation
    :platform: Unix, Windows
@@ -22,7 +22,17 @@ Created on 27/04/2019
 
 @author: cnheider
 """
-__all__ = ["PROJECT_APP_PATH", "PROJECT_NAME", "PROJECT_VERSION", "get_version"]
+__all__ = [
+    "PROJECT_APP_PATH",
+    "PROJECT_NAME",
+    "PROJECT_VERSION",
+    "get_version",
+    "PROJECT_ORGANISATION",
+    "PROJECT_AUTHOR",
+    "PROJECT_YEAR",
+    "INCLUDE_PROJECT_READMES",
+    "PACKAGE_DATA_PATH",
+]
 
 from typing import Any
 from pathlib import Path

@@ -10,9 +10,47 @@ __doc__ = r"""
 from functools import reduce
 from typing import Callable, Iterable, Sequence, Union
 
+import numpy
 from warg import Number, identity
 
-__all__ = ["SignalGenerator"]
+__all__ = ["SignalGenerator", "multifreq", "triangle", "sawtooth"]
+
+
+def multifreq(x: numpy.ndarray) -> numpy.ndarray:
+    return (
+        2
+        + numpy.sin(x * numpy.pi)
+        + 0.5 * numpy.sin(2 * x * numpy.pi)
+        - 0.2 * numpy.cos(5 * x * numpy.pi)
+    )
+
+
+def triangle(x: numpy.ndarray, section_length: float = 0.5) -> numpy.ndarray:
+
+    section0 = x < section_length
+    section1 = (x >= section_length) & (x < 2 * section_length)
+    section2 = (x >= 2 * section_length) & (x < 3 * section_length)
+    section3 = x >= 3 * section_length
+    output = numpy.zeros_like(x)
+    output[section0] = x[section0]
+    output[section1] = 2 * section_length - x[section1]
+    output[section2] = x[section2] - 2 * section_length
+    output[section3] = 4 * section_length - x[section3]
+    return output
+
+
+def sawtooth(x: numpy.ndarray, section_length: float = 0.5) -> numpy.ndarray:
+
+    section0 = x < section_length
+    section1 = (x >= section_length) & (x < 2 * section_length)
+    section2 = (x >= 2 * section_length) & (x < 3 * section_length)
+    section3 = x >= 3 * section_length
+    output = numpy.zeros_like(x)
+    output[section0] = x[section0]
+    output[section1] = x[section1] - section_length
+    output[section2] = x[section2] - 2 * section_length
+    output[section3] = x[section3] - 3 * section_length
+    return output
 
 
 class SignalGenerator:

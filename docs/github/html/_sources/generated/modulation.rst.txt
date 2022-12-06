@@ -35,13 +35,12 @@
    :template: custom_autosummary/module.rst
    :recursive:
 
-   modulation.audio_utilities
    modulation.classification
    modulation.data
-   modulation.denoising
    modulation.entry_points
-   modulation.noise_generation
+   modulation.jax_utilities
    modulation.regression
-   modulation.salience
+   modulation.signal_utilities
    modulation.torch_utilities
+   modulation.visualisation
 

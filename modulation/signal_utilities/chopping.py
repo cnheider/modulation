@@ -18,14 +18,14 @@ __all__ = [
     "separate_mask_regions",
 ]
 
-from typing import Sequence, Iterable, Tuple
+from typing import Sequence, Tuple
 
 import numpy
 
 from modulation.signal_utilities.segmentation import runs_of_non_zero
 
 
-def chop_n(x, n):
+def chop_n(x: Sequence, n: int) -> Sequence:
     """
 
     :param x:
@@ -38,7 +38,7 @@ def chop_n(x, n):
     return x[:n]
 
 
-def chop_n_end(x, n):
+def chop_n_end(x: Sequence, n: int) -> Sequence:
     """
 
     :param x:
@@ -51,7 +51,7 @@ def chop_n_end(x, n):
     return x[-n:]
 
 
-def chop_n_middle(x, n):
+def chop_n_middle(x: Sequence, n: int) -> Sequence:
     """
 
     :param x:
@@ -64,7 +64,7 @@ def chop_n_middle(x, n):
     return x[n:-n]
 
 
-def chop_n_middle_end(x, n):
+def chop_n_middle_end(x: Sequence, n: int) -> Sequence:
     """
 
     :param x:
@@ -77,7 +77,7 @@ def chop_n_middle_end(x, n):
     return x[n:-n][::-1]
 
 
-def chop_n_middle_start(x, n):
+def chop_n_middle_start(x: Sequence, n: int) -> Sequence:
     """
 
     :param x:
@@ -90,7 +90,7 @@ def chop_n_middle_start(x, n):
     return x[n:-n][::-1]
 
 
-def chop_n_start(x, n):
+def chop_n_start(x: Sequence, n: int) -> Sequence:
     """
 
     :param x:

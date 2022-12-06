@@ -28,6 +28,7 @@ modulation.regression
    :template: custom_autosummary/module.rst
    :recursive:
 
+   modulation.regression.denoising
    modulation.regression.linear_predictive_coding
    modulation.regression.spectral_denoise
 

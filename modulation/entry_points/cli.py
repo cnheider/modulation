@@ -23,6 +23,8 @@ indent = " " * margin
 
 
 class ModulationCLI(object):
+    """ """
+
     def run(self) -> None:
         """description"""
         pass

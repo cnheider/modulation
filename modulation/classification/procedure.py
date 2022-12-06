@@ -14,11 +14,13 @@ from draugr.torch_utilities import (
     TorchTrainSession,
     global_torch_device,
 )
-from draugr.tqdm_utilities import progress_bar
+from draugr.visualisation import progress_bar
 from draugr.writers import Writer
 from torch.nn import Module
 from torch.nn.functional import nll_loss
 from torch.utils.data import DataLoader
+
+__all__ = ["single_epoch_fitting", "single_epoch_evaluation"]
 
 
 def single_epoch_fitting(

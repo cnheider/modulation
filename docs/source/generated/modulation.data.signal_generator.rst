@@ -9,6 +9,15 @@ modulation.data.signal\_generator
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      multifreq
+      triangle
+      sawtooth
+   
    
 
    

@@ -30,6 +30,6 @@ modulation.classification
 
    modulation.classification.architecture
    modulation.classification.metrics
-   modulation.classification.procs
+   modulation.classification.procedure
    modulation.classification.seperation
 

@@ -18,6 +18,16 @@ from draugr.torch_utilities import to_tensor
 from matplotlib import pyplot
 from numpy.fft import irfft, rfft
 
+__all__ = [
+    "white_noise",
+    "blue_noise",
+    "brown_noise",
+    "pink_noise",
+    "violet_noise",
+    "generate_noise",
+    "GaussianNoiseTypeEnum",
+]
+
 
 def white_noise(length: int, seed: int = None) -> numpy.ndarray:
     """

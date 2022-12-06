@@ -11,6 +11,13 @@ import numpy
 import sklearn
 
 
+__all__ = [
+    "one_sample_positive_class_precisions",
+    "lwlrap_accumulator",
+    "calculate_per_class_lwlrap",
+]
+
+
 def one_sample_positive_class_precisions(
     scores: numpy.array, truths: numpy.array
 ) -> numpy.array:
@@ -30,7 +37,7 @@ def one_sample_positive_class_precisions(
           classes.
     """
 
-    pos_class_indices = numpy.flatnonzero(truth > 0)
+    pos_class_indices = numpy.flatnonzero(truths > 0)
 
     if not len(
         pos_class_indices
@@ -170,31 +177,37 @@ def calculate_per_class_lwlrap(truth, scores):
 
 
 if __name__ == "__main__":
-    # Random test data.
-    num_samples = 100
-    num_labels = 20
 
-    truth = numpy.random.rand(num_samples, num_labels) > 0.5
-    # Ensure at least some samples with no truth labels.
-    truth[0:1, :] = False
+    def ijsaduh():
+        # Random test data.
+        num_samples = 100
+        num_labels = 20
 
-    scores = numpy.random.rand(num_samples, num_labels)
+        truth = numpy.random.rand(num_samples, num_labels) > 0.5
+        # Ensure at least some samples with no truth labels.
+        truth[0:1, :] = False
 
-    per_class_lwlrap, weight_per_class = calculate_per_class_lwlrap(truth, scores)
-    print(
-        "lwlrap from per-class values=", numpy.sum(per_class_lwlrap * weight_per_class)
-    )
-    print(
-        "lwlrap from sklearn.metrics =", calculate_overall_lwlrap_sklearn(truth, scores)
-    )
+        scores = numpy.random.rand(num_samples, num_labels)
 
-    # Test of accumulator version.
-    accumulator = lwlrap_accumulator()
-    batch_size = 12
-    for base_sample in range(0, scores.shape[0], batch_size):
-        accumulator.accumulate_samples(
-            truth[base_sample : base_sample + batch_size, :],
-            scores[base_sample : base_sample + batch_size, :],
+        per_class_lwlrap, weight_per_class = calculate_per_class_lwlrap(truth, scores)
+        print(
+            "lwlrap from per-class values=",
+            numpy.sum(per_class_lwlrap * weight_per_class),
         )
-    print("cumulative_lwlrap=", accumulator.overall_lwlrap())
-    print("total_num_samples=", accumulator.total_num_samples)
+        print(
+            "lwlrap from sklearn.metrics =",
+            calculate_overall_lwlrap_sklearn(truth, scores),
+        )
+
+        # Test of accumulator version.
+        accumulator = lwlrap_accumulator()
+        batch_size = 12
+        for base_sample in range(0, scores.shape[0], batch_size):
+            accumulator.accumulate_samples(
+                truth[base_sample : base_sample + batch_size, :],
+                scores[base_sample : base_sample + batch_size, :],
+            )
+        print("cumulative_lwlrap=", accumulator.overall_lwlrap())
+        print("total_num_samples=", accumulator.total_num_samples)
+
+    ijsaduh()

@@ -6,3 +6,5 @@ __doc__ = r"""
 
            Created on 04-05-2021
            """
+
+from .dsd100 import *

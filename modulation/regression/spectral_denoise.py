@@ -10,6 +10,9 @@ __doc__ = r"""
 import numpy
 
 
+__all__ = ["fft_denoise"]
+
+
 def fft_denoise(
     noisy_signal: numpy.ndarray, num_time_steps: int, cutoff_threshold: float = 100
 ) -> numpy.ndarray:
