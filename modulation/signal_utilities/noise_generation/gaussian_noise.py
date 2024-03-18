@@ -135,6 +135,7 @@ def violet_noise(length: int, seed: int = None) -> numpy.ndarray:
 
 class GaussianNoiseTypeEnum(Enum):
     r"""description"""
+
     white = partial(
         white_noise
     )  # Partial to workaround interpreting as a method definition
