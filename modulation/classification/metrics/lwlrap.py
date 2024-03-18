@@ -159,9 +159,9 @@ def calculate_per_class_lwlrap(truth, scores):
         pos_class_indices, precision_at_hits = one_sample_positive_class_precisions(
             scores[sample_num, :], truth[sample_num, :]
         )
-        precisions_for_samples_by_classes[
-            sample_num, pos_class_indices
-        ] = precision_at_hits
+        precisions_for_samples_by_classes[sample_num, pos_class_indices] = (
+            precision_at_hits
+        )
     labels_per_class = numpy.sum(truth > 0, axis=0)
     weight_per_class = labels_per_class / float(numpy.sum(labels_per_class))
     # Form average of each column, i.e. all the precisions assigned to labels in
